@@ -1,0 +1,29 @@
+---
+# tasks file for uob_commons
+
+- name: Include base packages
+  include_tasks: base_packages.yml
+
+- name: Include AWS CLI
+  include_tasks: aws_cli.yml
+
+- name: Include EST timezone
+  include_tasks: est_timezone.yml
+
+- name: Include hostname
+  include_tasks: host_name.yml
+
+- name: Include resolv.conf
+  include_tasks: resolv_conf.yml
+
+- name: Include rsyslog.yml
+  include_tasks: rsyslog.yml
+
+- name: Set USERGROUPS_ENAB to yes
+  include_tasks: set_usergroups_enab_yes.yml
+
+- name: Include disable_firewalls.yml
+  include_tasks: disable_firewalls.yml
+
+- name: Include Palo Alto Decryption Cert
+  include_tasks: palo_alto_decryption_crt.yml

@@ -1,0 +1,124 @@
+name: UAT Deployment
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 'Develop Deployment'
+    types:
+      - completed
+concurrency:
+  group: 'uat-release'
+  cancel-in-progress: true
+
+jobs:
+  ### Parallelized Plan for all ENVS
+  SharedUat-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'shareduat'
+  IST-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ist'
+  EbUat-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ebUat'
+  EwbUat-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ewbUat'
+  SantUat-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'santUat'
+  MuobUat-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'muobUat'
+  CsiUat-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'csiUat'
+
+  # APPROVAL
+  approval:
+    runs-on: ubuntu-latest
+    needs:
+      - SharedUat-Plan
+      - EbUat-Plan
+      - EwbUat-Plan
+      - SantUat-Plan
+      - MuobUat-Plan
+      - CsiUat-Plan
+
+    environment: develop-deployment
+    steps:
+      - run: |
+          echo "Waiting for approval"
+
+  ## DEPLOYS
+
+  # Foundation
+  SharedUat:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedUat-Plan
+      - approval
+    with:
+      platform_env: 'shareduat'
+      stacks: ${{ needs.SharedUat-Plan.outputs.stacks }}
+  IST:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedUat
+      - approval
+      - IST-Plan
+    with:
+      platform_env: 'ist'
+      stacks: ${{ needs.IST-Plan.outputs.stacks }}
+  EbUat:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - EbUat-Plan
+      - SharedUat
+      - approval
+    with:
+      platform_env: 'ebUat'
+      stacks: ${{ needs.EbUat-Plan.outputs.stacks }}
+  EwbUat:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedUat
+      - approval
+      - EwbUat-Plan
+    with:
+      platform_env: 'ewbUat'
+      stacks: ${{ needs.EwbUat-Plan.outputs.stacks }}
+  SantUat:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedUat
+      - approval
+      - SantUat-Plan
+    with:
+      platform_env: 'santUat'
+      stacks: ${{ needs.SantUat-Plan.outputs.stacks }}
+  MuobUat:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedUat
+      - approval
+      - MuobUat-Plan
+    with:
+      platform_env: 'muobUat'
+      stacks: ${{ needs.MuobUat-Plan.outputs.stacks }}
+  CsiUat:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedUat
+      - approval
+      - CsiUat-Plan
+    with:
+      platform_env: 'csiUat'
+      stacks: ${{ needs.CsiUat-Plan.outputs.stacks }}

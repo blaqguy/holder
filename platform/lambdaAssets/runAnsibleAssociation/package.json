@@ -1,0 +1,23 @@
+{
+  "name": "runansibleassociation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.523.0",
+    "@aws-sdk/client-ec2": "^3.523.0",
+    "@aws-sdk/client-ssm": "^3.523.0",
+    "@aws-sdk/client-sts": "^3.523.0",
+    "@types/aws-lambda": "^8.10.134",
+    "axios": "^1.6.7"
+  }
+}

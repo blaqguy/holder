@@ -1,0 +1,58 @@
+---
+- name: Install BLD Base Packages
+  yum:
+    name: '{{ bld_packages }}'
+    state: present
+    update_cache: yes
+
+- name: Install ansible if not in expected location
+  command:
+  args:
+    cmd: 'sudo -u ansible -H sh -c "python3 -m pip install --user ansible"'
+    creates: '/home/ansible/.local/bin/ansible'
+
+- name: Comment out set -o emacs in .kshrc
+  become_user: ansible
+  replace:
+    path: /home/ansible/.kshrc
+    regexp: '^set -o emacs'
+    replace: '# set -o emacs'
+
+- name: List /data/ directories for chmod list
+  ansible.builtin.find:
+    paths: /data
+    file_type: directory
+  register: data_directories
+
+- name: Ensure ansible owns /data/ directory recursively
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: ansible
+    group: ansible
+    recurse: yes
+  loop: "{{ data_directories.files }}"
+
+- name: Create Jenkins agent work directory if not exists
+  ansible.builtin.file:
+    path: '/data/jenkins'
+    state: directory
+    owner: ansible
+    group: ansible
+    mode: '0755'
+
+# Disabling this for now till I redeploy Jenkins in PST Sandbox
+# - name: Check if agent.jar exists
+#   ansible.builtin.stat:
+#     path: '/data/jenkins/agent.jar'
+#   register: agent_jar_stat
+#   become_user: ansible
+
+# - name: Download Jenkins agent.jar if not exists
+#   ansible.builtin.get_url:
+#     url: 'https://platform-sandbox-jenkins.dragonflyft.com/jnlpJars/agent.jar'
+#     dest: '{{ agent_work_dir }}/agent.jar'
+#     owner: ansible
+#     group: ansible
+#     mode: '0755'
+#   when: agent_jar_stat.stat.exists == False
+#   register: agent_jar_download    

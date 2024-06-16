@@ -1,0 +1,40 @@
+name: Build Env Plan
+on: 
+  workflow_call:
+    inputs:
+      platform_env:
+        description: 'The env to build and plan'
+        default: 'platformSandbox'
+        required: true
+        type: string
+    outputs:
+      stacks: 
+        description: "The stacks to be deployed"
+        value: ${{ jobs.build-plan.outputs.stacks }}
+jobs:
+  build-plan:
+    runs-on: [self-hosted, plan-pool]
+    steps:
+      - name: Clean Workspace Folder
+        run: |
+         rm -rf ./* || true
+         rm -rf ./.??* || true
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: npm install
+        run: npm install --include=optional
+      - name: nx build
+        run: nx build platform -c ${{ inputs.platform_env }}
+      - name: synth
+        run: DOCKER_BUILDS_ENABLED=false cdktf list
+      - id: parse_manifest
+        name: STACK PLANS
+        run: |
+          set -x
+          ./buildAssets/scripts/parse_manifest.sh ${{ inputs.platform_env}} >> result
+          cat result
+          echo 'STACKS<<EOF' >> $GITHUB_OUTPUT
+          tail -n 1 result >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+    outputs:
+      stacks: ${{ steps.parse_manifest.outputs.STACKS }}

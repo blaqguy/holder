@@ -1,0 +1,44 @@
+---
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: disable and uninstall firewalld
+  block: 
+    - name: Stop, disable, and mask firewalld service when the service exists
+      ansible.builtin.systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+        masked: yes
+
+    - name: Uninstall firewalld package when it exists
+      yum:
+        name: firewalld
+        state: absent
+  when: "'firewalld.service' in ansible_facts.services"
+
+- name: disable and uninstall nftable
+  block:
+    - name: Stop, disable, and mask nftables service when the service exists
+      ansible.builtin.systemd:
+        name: nftables
+        state: stopped
+        enabled: no
+        masked: yes
+      when: "'nftables.service' in ansible_facts.services"
+
+    - name: Flush default nftables ruleset if it is installed
+      command:
+        cmd: nft flush ruleset
+      when: "'nftables' in ansible_facts.packages"      
+
+    - name: Uninstall nftables
+      yum:
+        name: nftables
+        state: absent
+      when: "'nftables.service' in ansible_facts.services"
+      

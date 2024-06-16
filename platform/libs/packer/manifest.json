@@ -1,0 +1,302 @@
+{
+  "builds": [
+    {
+      "name": "uob-app-server",
+      "builder_type": "amazon-ebs",
+      "build_time": 1667547979,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0d23dbdcfc02f701c",
+      "packer_run_uuid": "4c13db66-8b5d-826b-8c1a-20c431db21db",
+      "custom_data": null
+    },
+    {
+      "name": "uob-app-server",
+      "builder_type": "amazon-ebs",
+      "build_time": 1667873017,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0205ab1db3398b26e",
+      "packer_run_uuid": "c8aff9fd-6158-c659-5485-758fc30085cd",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-server",
+      "builder_type": "amazon-ebs",
+      "build_time": 1667873083,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0269894e574e3885d",
+      "packer_run_uuid": "c8aff9fd-6158-c659-5485-758fc30085cd",
+      "custom_data": null
+    },
+    {
+      "name": "uob-app-server",
+      "builder_type": "amazon-ebs",
+      "build_time": 1668521861,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0dc03c26c86c7a896",
+      "packer_run_uuid": "bd4843a6-cb27-4520-c66c-01f163c6dd26",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-server",
+      "builder_type": "amazon-ebs",
+      "build_time": 1668521889,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0ab8fcbb4ffdb8c30",
+      "packer_run_uuid": "bd4843a6-cb27-4520-c66c-01f163c6dd26",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669154565,
+      "files": null,
+      "artifact_id": "us-east-1:ami-01962193e05e55dad",
+      "packer_run_uuid": "d81080ad-be4b-cdbe-292b-7359daa6d6cf",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669154995,
+      "files": null,
+      "artifact_id": "us-east-1:ami-06cd1622f15e22378",
+      "packer_run_uuid": "d81080ad-be4b-cdbe-292b-7359daa6d6cf",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669155826,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0ba2be2058783c215",
+      "packer_run_uuid": "f8bd4942-ba6b-f261-f86b-5f5ed25a8575",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669155836,
+      "files": null,
+      "artifact_id": "us-east-1:ami-062c1e2d114e9cf32",
+      "packer_run_uuid": "f8bd4942-ba6b-f261-f86b-5f5ed25a8575",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669226351,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0d572b1e6f6377dbf",
+      "packer_run_uuid": "16a3b89a-d1f7-97e3-7c7a-beafccf7575e",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669226608,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0afc2962020908caa",
+      "packer_run_uuid": "16a3b89a-d1f7-97e3-7c7a-beafccf7575e",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669230458,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0c554f27cd6473bad",
+      "packer_run_uuid": "c84ddbc0-da3d-453b-491c-d613a672c53c",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669230643,
+      "files": null,
+      "artifact_id": "us-east-1:ami-06dcde53802c21ed6",
+      "packer_run_uuid": "c84ddbc0-da3d-453b-491c-d613a672c53c",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669247520,
+      "files": null,
+      "artifact_id": "us-east-1:ami-07a4beb48ca655cc4",
+      "packer_run_uuid": "53297c24-5b1f-e014-1380-17be8b255b85",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669247781,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0f1e09eac08c88249",
+      "packer_run_uuid": "53297c24-5b1f-e014-1380-17be8b255b85",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669252610,
+      "files": null,
+      "artifact_id": "us-east-1:ami-09a889b26263cf0f4",
+      "packer_run_uuid": "0d3bb1d5-3a9f-e9d0-f524-beddd6d9049e",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669252790,
+      "files": null,
+      "artifact_id": "us-east-1:ami-07bdeef93f5f029e1",
+      "packer_run_uuid": "0d3bb1d5-3a9f-e9d0-f524-beddd6d9049e",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669253283,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0b1caf4705b8e7b4e",
+      "packer_run_uuid": "5778efa1-54f1-1d6e-7f04-18706aa018d3",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669253436,
+      "files": null,
+      "artifact_id": "us-east-1:ami-05e19394974fdbefe",
+      "packer_run_uuid": "5778efa1-54f1-1d6e-7f04-18706aa018d3",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669256830,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0f8ab2d50dd782bb0",
+      "packer_run_uuid": "404b559f-6a7d-bdee-fc33-47714287d4a8",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669256959,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0aeb3a960a4d509f8",
+      "packer_run_uuid": "404b559f-6a7d-bdee-fc33-47714287d4a8",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669606950,
+      "files": null,
+      "artifact_id": "us-east-1:ami-04e3eb3ee17e058a1",
+      "packer_run_uuid": "54f4fbc1-385b-b94f-08a2-3eb73569ee05",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669607008,
+      "files": null,
+      "artifact_id": "us-east-1:ami-024278293fdd31ad0",
+      "packer_run_uuid": "54f4fbc1-385b-b94f-08a2-3eb73569ee05",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669613499,
+      "files": null,
+      "artifact_id": "us-east-1:ami-094fa75e6e7936a9a",
+      "packer_run_uuid": "c7d8e84d-437a-1eb4-cf44-4d94868f1ddf",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669613703,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0363cd6ff3a9ffae9",
+      "packer_run_uuid": "c7d8e84d-437a-1eb4-cf44-4d94868f1ddf",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669614945,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0614590f0afb51a1c",
+      "packer_run_uuid": "1b2ef054-c31a-490b-7a0c-2c00d3f704e4",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669614956,
+      "files": null,
+      "artifact_id": "us-east-1:ami-02399b07366822ccf",
+      "packer_run_uuid": "1b2ef054-c31a-490b-7a0c-2c00d3f704e4",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669654371,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0fbf0dddc4b446a5b",
+      "packer_run_uuid": "dd209865-e713-c12c-8a75-95580115af95",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669654489,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0f35efa51b578d0fc",
+      "packer_run_uuid": "dd209865-e713-c12c-8a75-95580115af95",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669680482,
+      "files": null,
+      "artifact_id": "us-east-1:ami-014562b12bf227b31",
+      "packer_run_uuid": "9067338a-2c91-26af-1a5c-398ec4b95db0",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669680618,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0c9e67f6e9c3d4539",
+      "packer_run_uuid": "9067338a-2c91-26af-1a5c-398ec4b95db0",
+      "custom_data": null
+    },
+    {
+      "name": "uob-server-foundation",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669682202,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0d06898c7080177ed",
+      "packer_run_uuid": "be4bd189-d2dd-3335-8b95-b8791bf405a3",
+      "custom_data": null
+    },
+    {
+      "name": "uob-ansible-controller",
+      "builder_type": "amazon-ebs",
+      "build_time": 1669682851,
+      "files": null,
+      "artifact_id": "us-east-1:ami-085c83849f3cca699",
+      "packer_run_uuid": "be4bd189-d2dd-3335-8b95-b8791bf405a3",
+      "custom_data": null
+    }
+  ],
+  "last_run_uuid": "be4bd189-d2dd-3335-8b95-b8791bf405a3"
+}

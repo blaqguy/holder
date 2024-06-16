@@ -1,0 +1,32 @@
+---
+- name: Copy files and links from /platform to /platformBackup
+  hosts: localhost
+  tasks:
+    - name: Create /platformBackup directory if it doesn't exist
+      ansible.builtin.file:
+        path: /platformBackup
+        state: directory
+
+    - name: Copy files from /platform to /platformBackup
+      ansible.builtin.copy:
+        src: /platform/
+        dest: /platformBackup/
+        remote_src: yes
+
+    - name: Check if apps filesystem exists
+      ansible.builtin.stat:
+        path: /apps/
+      register: apps_dir
+
+    - name: Create /appsBackup directory if it doesn't exist
+      ansible.builtin.file:
+        path: /appsBackup
+        state: directory
+      when: apps_dir.stat.exists
+
+    - name: Copy files from /apps to /appsBackup
+      ansible.builtin.copy:
+        src: /apps/
+        dest: /appsBackup/
+        remote_src: yes
+      when: apps_dir.stat.exists

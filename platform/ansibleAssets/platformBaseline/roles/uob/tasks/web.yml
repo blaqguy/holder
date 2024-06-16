@@ -1,0 +1,86 @@
+---
+- name: create ihsadmin user
+  ansible.builtin.user:
+    name: 'ihsadmin'
+    shell: /bin/ksh
+    groups: uob
+    append: yes
+    state: present
+
+- name: Install web packages
+  yum:
+    name: '{{ web_packages }}'
+    state: present
+    update_cache: yes
+
+- name: create ihsgroup
+  group:
+    name: ihsgroup
+    state: present
+
+- name: add ihsadmin to ihsgroup
+  user:
+    name: ihsadmin
+    groups: ihsgroup
+    append: yes
+
+- name: Set password for ihsadmin user
+  user:
+    name: mqm
+    password: "{{ ihsadmin_pw | password_hash('sha512', 'mysecretsalt') }}"
+
+- name: Add ihsadmin to cron.allow file
+  lineinfile:
+    path: /etc/cron.allow
+    line: 'ihsadmin'
+
+# Directories are listed then chmod-ed to avoid "max recursive depth exceeded" error
+# https://dragonflyft.atlassian.net/browse/AE-745
+- name: List /platform directories for chmod list
+  ansible.builtin.find:
+    paths: /platform
+    file_type: directory
+  register: platform_directories
+
+# the IBM directory can cause recursion errors, so handle it separately if it exists
+- name: Check if /platform/IBM exists
+  ansible.builtin.stat:
+    path: /platform/IBM
+  register: platform_ibm_stat
+
+- name: If /platform/IBM exists, set permissions
+  block:
+  - name : List /platform/IBM for chmod list
+    ansible.builtin.find: 
+      paths: /platform/IBM
+      file_type: directory
+    register: platform_ibm_directories
+    
+  - name: Change ownership of /platform/IBM directories to ihsadmin recursively
+    ansible.builtin.file:
+      path: "{{ item.path }}"
+      owner: ihsadmin
+      group: ihsadmin
+      recurse: yes
+    loop: "{{ platform_ibm_directories.files }}"
+
+  when: platform_ibm_stat.stat.isdir is defined and platform_ibm_stat.stat.isdir
+
+- name: Change ownership of /platform directory to ihsadmin recursively
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: ihsadmin
+    group: ihsadmin
+    recurse: yes
+  loop: "{{ platform_directories.files }}"
+  when: item.path != '/platform/IBM'
+
+- name: Set ACLs for /platform
+  ansible.builtin.acl:
+    path: /platform
+    entity: ihsadmin
+    etype: user
+    permissions: rwx
+    state: present
+    recursive: yes
+    default: yes

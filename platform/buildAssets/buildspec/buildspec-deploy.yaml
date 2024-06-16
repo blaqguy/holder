@@ -1,0 +1,35 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      # Setup NPM publish ability
+      - aws codeartifact login --tool npm --repository build-artifacts --domain dragonfly-pst
+
+      #TODO: Remove these sed statements but for now leaving them so we don't plan everything
+      # Will install all builds in builds.txt
+      - cd finalPackages/
+      # - sed -i '/platformSandbox/d' builds.txt
+      # - sed -i '/platformSandboxSharedNetwork/d' builds.txt
+      # - sed -i '/dev/d' builds.txt
+      # - sed -i '/performance/d' builds.txt
+      # - sed -i '/architectureSandbox/d' builds.txt
+      # - sed -i '/tools/d' builds.txt
+      - sed -i '/developerSandbox/d' builds.txt
+      - sed -i '/master/d' builds.txt
+      - sed -i '/sharedNetwork/d' builds.txt
+
+      - echo 'Building the following environments:'
+      - cat builds.txt
+
+      # Executing our cdk list and plan steps
+      - echo "Starting sub-scripts..."
+      - export DRAGONFLY_DEVELOPMENT_PREFIX=platformSandbox
+      - chmod -R +x buildAssets
+      - ./buildAssets/scripts/deploy-pipeline-list-and-deploy.sh
+      - rm -rf node_modules
+      - echo "Finishing sub-scripts"
+
+artifacts:
+  files:
+    - '**/*'

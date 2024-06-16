@@ -1,0 +1,402 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Image builder pipeline snapshot test Should create a pipeline that builds a Docker image and publishes to ECR 1`] = `
+"{
+  \\"data\\": {
+    \\"aws_caller_identity\\": {
+      \\"test-image-builder-pipeline_4E0B0A8F\\": {
+      }
+    },
+    \\"aws_codestarconnections_connection\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-codestar-connection_345D56CA\\": {
+        \\"name\\": \\"codepipeline-github-connection\\",
+        \\"tags\\": {
+          \\"Name\\": \\"codepipeline-github-connection\\"
+        }
+      }
+    },
+    \\"aws_iam_policy_document\\": {
+      \\"test-image-builder-pipeline_codebuild-test-image-image-builder-policy-document_7C16E9F4\\": {
+        \\"statement\\": [
+          {
+            \\"actions\\": [
+              \\"ecr:BatchCheckLayerAvailability\\",
+              \\"ecr:InitiateLayerUpload\\",
+              \\"ecr:UploadLayerPart\\",
+              \\"ecr:CompleteLayerUpload\\",
+              \\"ecr:PutImage\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"\${aws_ecr_repository.test-image-builder-pipeline_test-image-builder-pipeline-EcrRepository_FFF798C5.arn}\\"
+            ]
+          },
+          {
+            \\"actions\\": [
+              \\"ecr:GetAuthorizationToken\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"*\\"
+            ]
+          },
+          {
+            \\"actions\\": [
+              \\"logs:CreateLogGroup\\",
+              \\"logs:PutLogEvents\\",
+              \\"logs:CreateLogStream\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"*\\"
+            ]
+          },
+          {
+            \\"actions\\": [
+              \\"s3:GetObject\\",
+              \\"s3:GetObjectVersion\\",
+              \\"s3:GetBucketAcl\\",
+              \\"s3:GetBucketLocation\\",
+              \\"s3:List*\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"\${aws_s3_bucket.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsBucket_FAB42B28.arn}\\",
+              \\"\${aws_s3_bucket.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsBucket_FAB42B28.arn}/*\\"
+            ]
+          },
+          {
+            \\"actions\\": [
+              \\"kms:Decrypt\\",
+              \\"kms:GenerateDataKey\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"\${aws_kms_key.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsKmsKey_23FE9EE8.arn}\\"
+            ]
+          }
+        ]
+      },
+      \\"test-image-builder-pipeline_codebuild-test-image-image-builder-service-role-policy-document_AD1DF37B\\": {
+        \\"statement\\": [
+          {
+            \\"actions\\": [
+              \\"sts:AssumeRole\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"principals\\": [
+              {
+                \\"identifiers\\": [
+                  \\"codebuild.amazonaws.com\\"
+                ],
+                \\"type\\": \\"Service\\"
+              }
+            ]
+          }
+        ]
+      },
+      \\"test-image-builder-pipeline_test-image-image-builder-policy-document_00941C22\\": {
+        \\"statement\\": [
+          {
+            \\"actions\\": [
+              \\"codestar-connections:UseConnection\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"\${data.aws_codestarconnections_connection.test-image-builder-pipeline_test-image-image-builder-codestar-connection_345D56CA.arn}\\"
+            ]
+          },
+          {
+            \\"actions\\": [
+              \\"kms:Decrypt\\",
+              \\"kms:GenerateDataKey\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"\${aws_kms_key.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsKmsKey_23FE9EE8.arn}\\"
+            ]
+          },
+          {
+            \\"actions\\": [
+              \\"s3:PutObject\\",
+              \\"s3:GetObject\\",
+              \\"s3:GetObjectVersion\\",
+              \\"s3:GetBucketAcl\\",
+              \\"s3:GetBucketLocation\\",
+              \\"s3:List*\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"\${aws_s3_bucket.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsBucket_FAB42B28.arn}\\",
+              \\"\${aws_s3_bucket.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsBucket_FAB42B28.arn}/*\\"
+            ]
+          },
+          {
+            \\"actions\\": [
+              \\"codebuild:StartBuild\\",
+              \\"codebuild:BatchGetBuilds\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"resources\\": [
+              \\"arn:aws:codebuild:us-east-1:207348267374:project/test-image-image-builder\\"
+            ]
+          }
+        ]
+      },
+      \\"test-image-builder-pipeline_test-image-image-builder-service-role-policy-document_2E68DAC7\\": {
+        \\"statement\\": [
+          {
+            \\"actions\\": [
+              \\"sts:AssumeRole\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"principals\\": [
+              {
+                \\"identifiers\\": [
+                  \\"codepipeline.amazonaws.com\\"
+                ],
+                \\"type\\": \\"Service\\"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  \\"resource\\": {
+    \\"aws_cloudwatch_log_group\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-log-group_5B16460F\\": {
+        \\"name\\": \\"test-image-image-builder\\",
+        \\"retention_in_days\\": 365,
+        \\"tags\\": {
+          \\"Name\\": \\"test-image-image-builder\\"
+        }
+      }
+    },
+    \\"aws_codebuild_project\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-project_A952E2CE\\": {
+        \\"artifacts\\": {
+          \\"type\\": \\"CODEPIPELINE\\"
+        },
+        \\"environment\\": {
+          \\"compute_type\\": \\"BUILD_GENERAL1_MEDIUM\\",
+          \\"environment_variable\\": [
+            {
+              \\"name\\": \\"ACCOUNT_NUMBER\\",
+              \\"value\\": \\"207348267374\\"
+            },
+            {
+              \\"name\\": \\"REGION\\",
+              \\"value\\": \\"us-east-1\\"
+            },
+            {
+              \\"name\\": \\"IMAGE_NAME\\",
+              \\"value\\": \\"test-image\\"
+            },
+            {
+              \\"name\\": \\"DOCKERFILE_DIR\\",
+              \\"value\\": \\"path/to/dockerfile/dir\\"
+            }
+          ],
+          \\"image\\": \\"aws/codebuild/amazonlinux2-x86_64-standard:4.0\\",
+          \\"privileged_mode\\": true,
+          \\"type\\": \\"LINUX_CONTAINER\\"
+        },
+        \\"logs_config\\": {
+          \\"cloudwatch_logs\\": {
+            \\"group_name\\": \\"\${aws_cloudwatch_log_group.test-image-builder-pipeline_test-image-image-builder-log-group_5B16460F.name}\\"
+          }
+        },
+        \\"name\\": \\"test-image-image-builder\\",
+        \\"service_role\\": \\"\${aws_iam_role.test-image-builder-pipeline_codebuild-test-image-image-builder_IamRole_27575282.arn}\\",
+        \\"source\\": {
+          \\"buildspec\\": \\"libs/constructs/src/lib/imageBuilder/buildspec.yml\\",
+          \\"type\\": \\"CODEPIPELINE\\"
+        },
+        \\"tags\\": {
+          \\"Name\\": \\"test-image-image-builder\\"
+        }
+      }
+    },
+    \\"aws_codepipeline\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-pipeline_D4AD13AC\\": {
+        \\"artifact_store\\": [
+          {
+            \\"location\\": \\"\${aws_s3_bucket.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsBucket_FAB42B28.bucket}\\",
+            \\"type\\": \\"S3\\"
+          }
+        ],
+        \\"name\\": \\"test-image-image-builder\\",
+        \\"role_arn\\": \\"\${aws_iam_role.test-image-builder-pipeline_codepipeline-test-image-image-builder_IamRole_4F501C09.arn}\\",
+        \\"stage\\": [
+          {
+            \\"action\\": [
+              {
+                \\"category\\": \\"Source\\",
+                \\"configuration\\": {
+                  \\"BranchName\\": \\"master\\",
+                  \\"ConnectionArn\\": \\"\${data.aws_codestarconnections_connection.test-image-builder-pipeline_test-image-image-builder-codestar-connection_345D56CA.arn}\\",
+                  \\"DetectChanges\\": \\"false\\",
+                  \\"FullRepositoryId\\": \\"dragonflyft/platform\\"
+                },
+                \\"name\\": \\"Source\\",
+                \\"output_artifacts\\": [
+                  \\"SourceOutput\\"
+                ],
+                \\"owner\\": \\"AWS\\",
+                \\"provider\\": \\"CodeStarSourceConnection\\",
+                \\"run_order\\": 1,
+                \\"version\\": \\"1\\"
+              }
+            ],
+            \\"name\\": \\"Source\\"
+          },
+          {
+            \\"action\\": [
+              {
+                \\"category\\": \\"Build\\",
+                \\"configuration\\": {
+                  \\"ProjectName\\": \\"\${aws_codebuild_project.test-image-builder-pipeline_test-image-image-builder-project_A952E2CE.name}\\"
+                },
+                \\"input_artifacts\\": [
+                  \\"SourceOutput\\"
+                ],
+                \\"name\\": \\"Build\\",
+                \\"owner\\": \\"AWS\\",
+                \\"provider\\": \\"CodeBuild\\",
+                \\"run_order\\": 2,
+                \\"version\\": \\"1\\"
+              }
+            ],
+            \\"name\\": \\"Build\\"
+          }
+        ],
+        \\"tags\\": {
+          \\"Name\\": \\"test-image-image-builder\\"
+        }
+      }
+    },
+    \\"aws_ecr_repository\\": {
+      \\"test-image-builder-pipeline_test-image-builder-pipeline-EcrRepository_FFF798C5\\": {
+        \\"encryption_configuration\\": [
+          {
+            \\"encryption_type\\": \\"AES256\\"
+          }
+        ],
+        \\"force_delete\\": true,
+        \\"image_scanning_configuration\\": {
+          \\"scan_on_push\\": true
+        },
+        \\"image_tag_mutability\\": \\"MUTABLE\\",
+        \\"name\\": \\"test-image-builder-pipeline\\",
+        \\"tags\\": {
+          \\"Name\\": \\"test-image-builder-pipeline\\"
+        }
+      }
+    },
+    \\"aws_ecr_repository_policy\\": {
+      \\"test-image-builder-pipeline_test-image-builder-pipeline-EcrRepositoryPolicy_237C2B76\\": {
+        \\"policy\\": \\"{\\\\\\"Version\\\\\\":\\\\\\"2012-10-17\\\\\\",\\\\\\"Statement\\\\\\":[{\\\\\\"Action\\\\\\":[\\\\\\"ecr:GetDownloadUrlForLayer\\\\\\",\\\\\\"ecr:BatchGetImage\\\\\\",\\\\\\"ecr:BatchCheckLayerAvailability\\\\\\",\\\\\\"ecr:PutImage\\\\\\",\\\\\\"ecr:InitiateLayerUpload\\\\\\",\\\\\\"ecr:UploadLayerPart\\\\\\",\\\\\\"ecr:CompleteLayerUpload\\\\\\",\\\\\\"ecr:DescribeRepositories\\\\\\",\\\\\\"ecr:GetRepositoryPolicy\\\\\\",\\\\\\"ecr:ListImages\\\\\\",\\\\\\"ecr:DeleteRepository\\\\\\",\\\\\\"ecr:BatchDeleteImage\\\\\\",\\\\\\"ecr:SetRepositoryPolicy\\\\\\",\\\\\\"ecr:DeleteRepositoryPolicy\\\\\\"],\\\\\\"Effect\\\\\\":\\\\\\"Allow\\\\\\",\\\\\\"Principal\\\\\\":{\\\\\\"AWS\\\\\\":[\\\\\\"arn:aws:iam::\${data.aws_caller_identity.test-image-builder-pipeline_4E0B0A8F.id}:root\\\\\\"]}}]}\\",
+        \\"repository\\": \\"\${aws_ecr_repository.test-image-builder-pipeline_test-image-builder-pipeline-EcrRepository_FFF798C5.name}\\"
+      }
+    },
+    \\"aws_iam_policy\\": {
+      \\"test-image-builder-pipeline_codebuild-test-image-image-builder_codebuild-test-image-image-builder-PermissionsPolicy0_34B23E6A\\": {
+        \\"name\\": \\"codebuild-test-image-image-builder-permissions-policy-0\\",
+        \\"policy\\": \\"\${data.aws_iam_policy_document.test-image-builder-pipeline_codebuild-test-image-image-builder-policy-document_7C16E9F4.json}\\",
+        \\"tags\\": {
+          \\"Name\\": \\"codebuild-test-image-image-builder-permissions-policy-0\\"
+        }
+      },
+      \\"test-image-builder-pipeline_codepipeline-test-image-image-builder_codepipeline-test-image-image-builder-PermissionsPolicy0_75E8D6E2\\": {
+        \\"name\\": \\"codepipeline-test-image-image-builder-permissions-policy-0\\",
+        \\"policy\\": \\"\${data.aws_iam_policy_document.test-image-builder-pipeline_test-image-image-builder-policy-document_00941C22.json}\\",
+        \\"tags\\": {
+          \\"Name\\": \\"codepipeline-test-image-image-builder-permissions-policy-0\\"
+        }
+      }
+    },
+    \\"aws_iam_role\\": {
+      \\"test-image-builder-pipeline_codebuild-test-image-image-builder_IamRole_27575282\\": {
+        \\"assume_role_policy\\": \\"\${data.aws_iam_policy_document.test-image-builder-pipeline_codebuild-test-image-image-builder-service-role-policy-document_AD1DF37B.json}\\",
+        \\"name\\": \\"codebuild-test-image-image-builder\\",
+        \\"tags\\": {
+          \\"Name\\": \\"codebuild-test-image-image-builder\\"
+        }
+      },
+      \\"test-image-builder-pipeline_codepipeline-test-image-image-builder_IamRole_4F501C09\\": {
+        \\"assume_role_policy\\": \\"\${data.aws_iam_policy_document.test-image-builder-pipeline_test-image-image-builder-service-role-policy-document_2E68DAC7.json}\\",
+        \\"name\\": \\"codepipeline-test-image-image-builder\\",
+        \\"tags\\": {
+          \\"Name\\": \\"codepipeline-test-image-image-builder\\"
+        }
+      }
+    },
+    \\"aws_iam_role_policy_attachment\\": {
+      \\"test-image-builder-pipeline_codebuild-test-image-image-builder_codebuild-test-image-image-builder-PermissionsAttachement0_8B10A210\\": {
+        \\"policy_arn\\": \\"\${aws_iam_policy.test-image-builder-pipeline_codebuild-test-image-image-builder_codebuild-test-image-image-builder-PermissionsPolicy0_34B23E6A.arn}\\",
+        \\"role\\": \\"\${aws_iam_role.test-image-builder-pipeline_codebuild-test-image-image-builder_IamRole_27575282.id}\\"
+      },
+      \\"test-image-builder-pipeline_codepipeline-test-image-image-builder_codepipeline-test-image-image-builder-PermissionsAttachement0_0098727B\\": {
+        \\"policy_arn\\": \\"\${aws_iam_policy.test-image-builder-pipeline_codepipeline-test-image-image-builder_codepipeline-test-image-image-builder-PermissionsPolicy0_75E8D6E2.arn}\\",
+        \\"role\\": \\"\${aws_iam_role.test-image-builder-pipeline_codepipeline-test-image-image-builder_IamRole_4F501C09.id}\\"
+      }
+    },
+    \\"aws_kms_alias\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsKeyAlias_1E150741\\": {
+        \\"name\\": \\"alias/test-image-image-builder-key\\",
+        \\"target_key_id\\": \\"\${aws_kms_key.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsKmsKey_23FE9EE8.id}\\"
+      }
+    },
+    \\"aws_kms_key\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsKmsKey_23FE9EE8\\": {
+        \\"deletion_window_in_days\\": 7,
+        \\"description\\": \\"test-image-image-builder-key\\",
+        \\"enable_key_rotation\\": true,
+        \\"multi_region\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"test-image-image-builder-pipeline-artifacts\\"
+        }
+      }
+    },
+    \\"aws_s3_bucket\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsBucket_FAB42B28\\": {
+        \\"bucket\\": \\"test-image-image-builder-pipeline-artifacts\\",
+        \\"force_destroy\\": false,
+        \\"server_side_encryption_configuration\\": {
+          \\"rule\\": {
+            \\"apply_server_side_encryption_by_default\\": {
+              \\"kms_master_key_id\\": \\"\${aws_kms_key.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsKmsKey_23FE9EE8.arn}\\",
+              \\"sse_algorithm\\": \\"aws:kms\\"
+            }
+          }
+        },
+        \\"tags\\": {
+          \\"Name\\": \\"test-image-image-builder-pipeline-artifacts\\"
+        },
+        \\"versioning\\": {
+          \\"enabled\\": true,
+          \\"mfa_delete\\": false
+        }
+      }
+    },
+    \\"aws_s3_bucket_ownership_controls\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsOwnershipControl_3B9A1D49\\": {
+        \\"bucket\\": \\"\${aws_s3_bucket.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsBucket_FAB42B28.id}\\",
+        \\"rule\\": {
+          \\"object_ownership\\": \\"BucketOwnerEnforced\\"
+        }
+      }
+    },
+    \\"aws_s3_bucket_public_access_block\\": {
+      \\"test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsAccessBlock_1EE4F9F6\\": {
+        \\"block_public_acls\\": true,
+        \\"block_public_policy\\": true,
+        \\"bucket\\": \\"\${aws_s3_bucket.test-image-builder-pipeline_test-image-image-builder-pipeline-artifacts_test-image-image-builder-pipeline-artifactsBucket_FAB42B28.id}\\",
+        \\"ignore_public_acls\\": true,
+        \\"restrict_public_buckets\\": true
+      }
+    }
+  }
+}"
+`;

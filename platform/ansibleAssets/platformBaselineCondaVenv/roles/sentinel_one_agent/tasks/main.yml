@@ -1,0 +1,69 @@
+---
+# tasks file for sentinel_one_agent
+
+- name: Check if sentinel installed
+  stat:
+    path: '/opt/sentinelone/bin/sentinelctl'
+  register: sentinel_installed
+
+- name: Install SentinelOne Agent
+  block:
+    - name: Call API to get package info
+      uri:
+        url: '{{ s1_mgmt_url }}{{ api_endpoint }}?countOnly=false&packageTypes=Agent&osTypes=linux&sortBy=createdAt&limit=20&fileExtension={{ file_extension }}&sortOrder=desc'
+        method: GET
+        headers:
+          Accept: 'application/json'
+          Authorization: 'ApiToken {{ s1_api_key }}'
+        return_content: yes
+        status_code: 200
+      register: api_response
+      ignore_errors: true
+
+    - name: Filter JSON data to get latest GA version which does not contain aarch64 in filename
+      set_fact:
+        filtered_data: '{{ api_response.json.data | to_json | from_json | json_query(query) }}'
+      vars:
+        query: "[?status == 'ga' && !(contains(fileName, 'aarch64'))] | [0]"
+
+    - name: Set latest version info
+      set_fact:
+        agent_file_name: '{{ filtered_data.fileName }}'
+        agent_download_link: '{{ filtered_data.link }}'
+
+    - name: Download SentinelOne Agent package
+      get_url:
+        url: '{{ agent_download_link }}'
+        headers:
+          Authorization: 'ApiToken {{ s1_api_key }}'
+        dest: '/tmp/{{ agent_file_name }}'
+
+    - name: debug agent file name
+      debug:
+        msg: '{{ agent_file_name }}'
+
+    # The yum module doesn't seem to work with the SentinelOne agent package. Official docs use rpm so does their janky playbook
+    - name: Install SentinelOne Agent
+      shell: 'rpm -i --nodigest /tmp/{{ agent_file_name }}'
+
+    - name: Set SentinelOne Agent Site Token
+      command: '/opt/sentinelone/bin/sentinelctl management token set {{ s1_site_token }}'
+
+    - name: Remove downloaded file
+      file:
+        path: '/tmp/{{ agent_file_name }}'
+        state: absent
+
+    - name: Cleaning up response and version files
+      file:
+        path: '{{ item }}'
+        state: absent
+      with_items:
+        - response.txt
+        - versions.txt
+  when: not sentinel_installed.stat.exists
+
+# Because SentinelOne is apparently brittle, creating a systemd service is outta the question currently
+- name: Start SentinelOne Agent
+  command: /opt/sentinelone/bin/sentinelctl control start
+  changed_when: false

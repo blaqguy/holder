@@ -1,0 +1,6 @@
+---
+# defaults file for sentinel_one_agent
+s1_mgmt_url: 'https://usea1-pax8-exsp.sentinelone.net'
+s1_version_status: 'ga'
+api_endpoint: '/web/api/v2.1/update/agent/packages'
+file_extension: '.rpm'

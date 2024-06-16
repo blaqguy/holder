@@ -1,0 +1,25 @@
+version: 0.2
+env:
+  secrets-manager:
+    # Authenticate Prisma with secrets manager secret containing dragonfly org Prisma API key
+    PRISMA_ACCESS_KEY: 'API-key/Prisma-cloud-key:prisma-df-org-api-access-key'
+    PRISMA_SECRET_KEY: 'API-key/Prisma-cloud-key:prisma-df-org-api-secret-key'
+
+phases:
+  build:
+    on-failure: ABORT
+    commands:
+      #TODO: Remove these sed statements but for now leaving them so we don't plan everything
+      # Will install all builds in builds.txt
+      - cd finalPackages/
+      - pwd
+      - ls
+
+      # Executing our cdk list and plan steps
+      - echo "Starting sub-scripts..."
+      - ./buildAssets/scripts/build-process-scan-analysis.sh $PRISMA_ACCESS_KEY $PRISMA_SECRET_KEY
+      - echo "Finishing sub-scripts"
+
+artifacts:
+  files:
+    - '**/*'

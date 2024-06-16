@@ -1,0 +1,79 @@
+---
+- name: create mqm user
+  ansible.builtin.user:
+    name: 'mqm'
+    shell: /bin/ksh
+    groups: uob
+    append: yes
+    state: present
+
+- name: Install rt packages
+  yum:
+    name: '{{ rt_packages }}'
+    state: present
+    update_cache: yes
+    disable_gpg_check: yes
+
+- name: Set owner and group for /platform
+  ansible.builtin.file:
+    path: '/platform/fi{{ fi_name }}'
+    owner: 'us{{ fi_name }}'
+    group: 'us{{ fi_name }}'
+    recurse: yes
+
+# Commenting this one out as well til I figure out how to pass in the upf_database_fqdns
+- name: Upf DB connection
+  block:
+    - name: Install ipset package
+      package:
+        name: ipset
+        state: present
+
+    - name: Create ipset entry for database FQDN
+      command: ipset -exist create upfset hash:ip
+
+    - name: Add FQDNs to UPF ipset
+      command: ipset -exist add upfset "{{ lookup('community.general.dig', item) }}"
+      loop: "{{ upf_database_fqdns.split(',') }}"
+
+    - name: Modify iptables for REDIRECT
+      iptables:
+        table: nat
+        chain: OUTPUT
+        protocol: tcp
+        source: '{{ current_host_ip }}'
+        match: 'set'
+        match_set: 'upfset' # Only specify the name of the set here, without items
+        match_set_flags: 'dst' # Add flags if required for the match set (change 'dst' as needed)
+        destination_port: 4
+        jump: REDIRECT
+        to_ports: '1521' # Change this to the desired port
+      register: iptables_output
+      ignore_errors: true
+      vars:
+        current_host_ip: '{{ ansible_default_ipv4.address }}'
+
+    - name: Save iptables
+      community.general.iptables_state:
+        state: saved
+        path: /etc/sysconfig/iptables
+
+    - name: Restore UPF Dnat on Reboot
+      cron:
+        name: create_ipset
+        special_time: reboot
+        job: /usr/sbin/ipset create upfset hash:ip && /usr/sbin/iptables-restore < /etc/sysconfig/iptables
+
+    - name: Template the ipset update script
+      ansible.builtin.template:
+        src: update_ipset.sh.j2
+        dest: /usr/local/bin/update_ipset.sh
+        mode: '0755'
+
+    - name: Add cron job to update ipset every minute
+      cron:
+        name: update_ipset
+        minute: '*'
+        job: "/usr/local/bin/update_ipset.sh"
+        state: present
+  when: tier != 'sim' and upf_database_fqdns != 'not-applicable'

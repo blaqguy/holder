@@ -1,0 +1,28 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      # codeartifact authentication
+      - aws codeartifact login --tool npm --repository build-artifacts --domain dragonfly-pst
+
+      # install dependencies
+      - npm install
+
+      # Finding buildable environments and building
+      - echo "Starting for loop of builds..."
+      - mkdir finalPackages
+      - cat apps/platform/project.json | jq '.targets.build.configurations | keys[]' | tr -d '"' > builds.txt
+      - chmod -R +x buildAssets
+      - cp apps/platform/src/environments/environmentVersions.json finalPackages/
+      - ./buildAssets/scripts/build-process-publish-build.sh
+
+      # Move necessary files into finalPackages
+      - cp -r buildAssets/ finalPackages/
+      - cp builds.txt finalPackages/
+      - zip finalPackages.zip finalPackages -r
+      - aws s3 cp finalPackages.zip s3://$CURRENT_ENVIRONMENT-df-codepipeline-artifacts/build-pipeline/finalPackages/
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'finalPackages/'

@@ -1,0 +1,14 @@
+[Unit]
+Description=Fisheye service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=fisheye
+Environment=JAVA_HOME={{ java_home_location.stdout }}
+Environment=FISHEYE_INST={{ fisheye_instance_dir }}
+ExecStart=/opt/fisheye/fecru-{{ fisheye_version}}/bin/fisheyectl.sh start
+ExecStop=/opt/fisheye/fecru-{{ fisheye_version}}/bin/fisheyectl.sh stop
+
+[Install]
+WantedBy=multi-user.target

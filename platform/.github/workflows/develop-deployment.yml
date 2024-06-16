@@ -1,0 +1,95 @@
+name: Develop Deployment
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop 
+
+concurrency:
+  group: 'develop-deployment'
+  cancel-in-progress: true
+
+jobs:
+  ### Parallelized Plan for all ENVS
+  NonProdSharedNetwork-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'nonProdSharedNetwork'
+  EbCit-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ebCit'
+  EbQe-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ebQe'
+  QE-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'qe'
+  Performance-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'performance'
+
+  # APPROVAL
+  approval:
+    runs-on: ubuntu-latest
+    needs:
+      - NonProdSharedNetwork-Plan
+      - EbCit-Plan
+      - EbQe-Plan
+      - QE-Plan
+      - Performance-Plan
+
+    environment: develop-deployment
+    steps:
+      - run: |
+          echo "Waiting for approval"
+
+  ## DEPLOYS
+
+  NonProdSharedNetwork:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - approval
+      - NonProdSharedNetwork-Plan
+    with:
+      platform_env: 'nonProdSharedNetwork'
+      stacks: ${{ needs.NonProdSharedNetwork-Plan.outputs.stacks }}
+  EbCit:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - NonProdSharedNetwork
+      - EbCit-Plan
+      - approval
+    with:
+      platform_env: 'ebCit'
+      stacks: ${{ needs.EbCit-Plan.outputs.stacks }}
+  EbQe:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - NonProdSharedNetwork
+      - EbQe-Plan
+      - approval
+    with:
+      platform_env: 'ebQe'
+      stacks: ${{ needs.EbQe-Plan.outputs.stacks }}
+  QE:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - NonProdSharedNetwork
+      - approval
+      - QE-Plan
+    with:
+      platform_env: 'qe'
+      stacks: ${{ needs.QE-Plan.outputs.stacks }}
+  Performance:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - NonProdSharedNetwork
+      - approval
+      - Performance-Plan
+    with:
+      platform_env: 'performance'
+      stacks: ${{ needs.Performance-Plan.outputs.stacks }}

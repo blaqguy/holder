@@ -1,0 +1,13 @@
+---
+# Set USERGROUP_ENAB to yes because in newer versions of CIS hardened
+# image it got set to no for some ungodly reason.  So set back to
+# yes to restore all old functionality.  Setting it to yes because
+# this is what creates the user's primary group that is associated
+# to the user (e.g. when set to yes, creating a user called usmod now
+# creates a group called usmod and ties it to the user)
+- name: Set USERGROUPS_ENAB_yes
+  lineinfile:
+    path: /etc/login.defs
+    regexp: "^#? *USERGROUPS_ENAB no"
+    line: "USERGROUPS_ENAB yes"
+    state: present

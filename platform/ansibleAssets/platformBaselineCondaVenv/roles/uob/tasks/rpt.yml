@@ -1,0 +1,14 @@
+---
+- name: Install rpt packages
+  yum:
+    name: '{{ rpt_packages }}'
+    state: present
+    update_cache: yes
+    disable_gpg_check: yes
+
+- name: Change ownership of /platform to ac{{ fi_name }}
+  file:
+    path: /platform/fi{{ fi_name }}
+    owner: ac{{ fi_name }}
+    group: ac{{ fi_name }}
+    recurse: yes

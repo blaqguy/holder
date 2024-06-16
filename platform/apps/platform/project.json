@@ -1,0 +1,396 @@
+{
+  "name": "platform",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/platform/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/platform",
+        "main": "apps/platform/src/main.ts",
+        "tsConfig": "apps/platform/tsconfig.app.json",
+        "packageJson": "apps/platform/package.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "libs/stacks/docker",
+            "output": "./docker"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/constructs/src/lib/clientVpn/files/",
+            "output": "./files"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/stacks/src/lib/environmentVpc/files",
+            "output": "./files"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/constructs/src/lib/vpc/helpers/templates",
+            "output": "./templates"
+          },
+          {
+            "glob": "**/*",
+            "input": "buildAssets/scripts",
+            "output": "./buildAssets/scripts"
+          },
+          {
+            "glob": "**/*",
+            "input": "deployAssets/uobScripts",
+            "output": "./uobScripts"
+          },
+          {
+            "glob": "**/*",
+            "input": "ansibleAssets",
+            "output": "./ansibleAssets"
+          },
+          {
+            "glob": "**/*",
+            "input": "lambdaAssets",
+            "output": "./lambdaAssets"
+          },
+          {
+            "glob": "**/*",
+            "input": "certificates",
+            "output": "./certificates"
+          }          
+        ],
+        "target": "node",
+        "compiler": "tsc"
+      },
+      "configurations": {
+        "master": {
+          "optimization": false,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.master.ts"
+            }
+          ]
+        },
+        "tools": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.tools.ts"
+            }
+          ]
+        },
+        "sharedNetwork": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.sharedNetwork.ts"
+            }
+          ]
+        },
+        "nonProdSharedNetwork": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.nonProdSharedNetwork.ts"
+            }
+          ]
+        },
+        "developerSandbox": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.developerSandbox.ts"
+            }
+          ]
+        },
+        "dev": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.dev.ts"
+            }
+          ]
+        },
+        "platformSandbox": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.platformSandbox.ts"
+            }
+          ]
+        },
+        "platformSandboxSharedNetwork": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.platformSandboxSharedNetwork.ts"
+            }
+          ]
+        },
+        "architectureSandbox": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.architectureSandbox.ts"
+            }
+          ]
+        },
+        "audit": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.audit.ts"
+            }
+          ]
+        },
+        "performance": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.performance.ts"
+            }
+          ]
+        },
+        "qe": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.qe.ts"
+            }
+          ]
+        },
+        "ist": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.ist.ts"
+            }
+          ]
+        },
+        "shareduat": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.sharedUat.ts"
+            }
+          ]
+        },
+        "ewbUat": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.ewbUat.ts"
+            }
+          ]
+        },
+        "santUat": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.santUat.ts"
+            }
+          ]
+        },
+        "muobUat": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.muobUat.ts"
+            }
+          ]
+        },
+        "logArchive": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.logArchive.ts"
+            }
+          ]
+        },
+        "sharedProd": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.sharedProd.ts"
+            }
+          ]
+        },
+        "ewbProd": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.ewbProd.ts"
+            }
+          ]
+        },
+        "ebCit": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.ebCit.ts"
+            }
+          ]
+        },
+        "ebQe": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.ebQe.ts"
+            }
+          ]
+        },
+        "ebUat": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.ebUat.ts"
+            }
+          ]
+        },
+        "ebProd": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.ebProd.ts"
+            }
+          ]
+        },
+        "stateStreetProd": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.stateStreetProd.ts"
+            }
+          ]
+        },
+        "santProd": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.santProd.ts"
+            }
+          ]
+        },
+        "muobProd": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.muobProd.ts"
+            }
+          ]
+        },
+        "aciProdSupport": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.aciProdSupport.ts"
+            }
+          ]
+        },
+        "securitySandbox": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.securitySandbox.ts"
+            }
+          ]
+        },
+        "csiUat": {
+          "optimization": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/platform/src/environments/environment.ts",
+              "with": "apps/platform/src/environments/environment.csiUat.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "platform:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "platform:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/platform/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/platform"],
+      "options": {
+        "jestConfig": "apps/platform/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

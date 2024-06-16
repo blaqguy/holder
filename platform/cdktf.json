@@ -1,0 +1,25 @@
+{
+  "language": "typescript",
+  "app": "npx node dist/apps/platform/main.js",
+  "projectId": "67ff3db5-543b-4d0d-97f8-b195012d08a6",
+  "sendCrashReports": "false",
+  "codeMakerOutput": "./libs/generated/.gen/",
+  "terraformProviders": [],
+  "terraformModules": [
+    {
+      "name": "AccountFactoryForTerraform",
+      "source": "aws-ia/control_tower_account_factory/aws",
+      "version": "1.6.4"
+    },
+    {
+      "name": "asg",
+      "source": "terraform-aws-modules/autoscaling/aws",
+      "version": "6.7.1"
+    },
+    {
+      "name": "ecs",
+      "source": "terraform-aws-modules/ecs/aws",
+      "version": "5.2.0"
+    }
+  ]
+}

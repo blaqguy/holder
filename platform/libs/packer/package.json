@@ -1,0 +1,6 @@
+{
+  "name": "packer",
+  "scripts": {
+    "build": "packer build uob-servers/images.pkr.hcl"
+  }
+}

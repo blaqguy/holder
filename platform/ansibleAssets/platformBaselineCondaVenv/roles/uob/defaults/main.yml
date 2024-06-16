@@ -1,0 +1,42 @@
+---
+packages_rhel8:
+  - python36
+  - ksh
+  - libselinux-python3
+  - lsof
+  - java-11-openjdk-devel-11.0.15.0.10-2.el8_6
+  - java-1.8.0-openjdk
+  - gcc
+  - openssl-devel
+
+packages_rhel7:
+  - python36
+  - ksh
+  - libselinux-python3
+  - lsof
+  - java-11-openjdk-devel-11.0.15.0.9-2.el7_9
+  - java-1.8.0-openjdk
+  - gcc
+  - openssl-devel
+
+efs_directories:
+  - depot
+  - dumps_archive
+  - log_archive
+  - mqha/data
+  - mqha/logs
+  - shares
+  - support
+  - support/depot
+  - support/dumps
+  - support/dumps_archive
+  - support/logs
+  - support/logs/nmon
+  - weblog_archive
+
+fi_efs_directories:
+  - shares/{{ fi_name }}
+  - support/dumps_archive/{{ fi_name }}
+  - support/dumps/{{ fi_name }}
+  - support/logs/{{ fi_name }}
+  - support/logs/archive/{{ fi_name }}

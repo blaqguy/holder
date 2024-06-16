@@ -1,0 +1,8 @@
+#!/bin/bash
+# Flush the ipset list
+ipset flush upfset
+
+# Add each FQDN to the ipset list
+{% for fqdn in upf_database_fqdns.split(',') %}
+sudo ipset add upfset {{ fqdn }}
+{% endfor %}

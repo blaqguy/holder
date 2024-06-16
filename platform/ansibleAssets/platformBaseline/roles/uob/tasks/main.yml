@@ -1,0 +1,45 @@
+---
+- name: Include flight check tasks
+  include_tasks: flight_check.yml
+
+- name: Include common tasks
+  include_tasks: commons.yml
+
+- name: Include app tasks
+  include_tasks: app.yml
+  when: tier == 'app'
+
+- name: Include bat tasks
+  include_tasks: bat.yml
+  when: tier == 'bat'
+
+- name: Include bld tasks
+  include_tasks: bld.yml
+  when: tier == 'bld'
+
+- name: Include lbs tasks
+  include_tasks: lbs.yml
+  when: tier == 'lbs'
+
+- name: Include mq tasks
+  include_tasks: mq.yml
+  when: tier == 'mq'
+
+- name: Include msi tasks
+  include_tasks: msi.yml
+  when: tier == 'msi'
+
+- name: Include rpt tasks
+  include_tasks: rpt.yml
+  when: tier == 'rpt'  
+
+- name: Include rt tasks
+  include_tasks: rt.yml
+  when: tier == 'rt' or tier == 'sim'
+
+- name: Include web tasks
+  include_tasks: web.yml
+  when: tier == 'web'
+
+- name: Include aod edge cases
+  include_tasks: aod_edge_cases.yml

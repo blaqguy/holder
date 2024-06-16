@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Autoscaling group deployment testing Should create an autoscaling group with a given launch template 1`] = `
+"{
+  \\"resource\\": {
+    \\"aws_autoscaling_group\\": {
+      \\"test-asg\\": {
+        \\"desired_capacity\\": 1,
+        \\"launch_template\\": {
+          \\"name\\": \\"\${aws_launch_template.test-launch-template.name}\\"
+        },
+        \\"max_size\\": 1,
+        \\"min_size\\": 1,
+        \\"name\\": \\"test\\",
+        \\"vpc_zone_identifier\\": [
+          \\"test-subnet-1\\",
+          \\"test-subnet-2\\"
+        ]
+      }
+    },
+    \\"aws_launch_template\\": {
+      \\"test-launch-template\\": {
+        \\"image_id\\": \\"test-ami-id\\",
+        \\"instance_type\\": \\"test-instance-type\\",
+        \\"name\\": \\"test\\"
+      }
+    }
+  }
+}"
+`;

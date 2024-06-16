@@ -1,0 +1,64 @@
+jenkins:
+    systemMessage: "Serverless Fargate Jenkins"
+    numExecutors: 0
+    remotingSecurity:
+      enabled: true
+    agentProtocols:
+        - "JNLP4-connect"
+    securityRealm:
+      azure:
+        cacheDuration: 3600
+        clientId: ${sso_client_id}
+        clientSecret: ${sso_client_secret}
+        tenant: ${sso_tenant}
+    authorizationStrategy:
+        azureAdMatrix:
+          permissions:
+          - "GROUP:Overall/Administer:a050c8d1-cf52-43af-a8cb-ccada7eefab1"
+          - "GROUP:Overall/Administer:authenticated"
+    crumbIssuer: "standard"
+    slaveAgentPort: ${agent_port}
+    clouds:
+        - ecs:
+            allowedOverrides: "inheritFrom,label,memory,cpu,image"
+            credentialsId: ""
+            cluster: ${ecs_agent_cluster}
+            name: "agent-cluster"
+            regionName: ${aws_default_region}
+            retentionTimeout: 10
+            jenkinsUrl: "https://${jenkins_url}"
+            templates:
+                - assignPublicIp: false 
+                  cpu: 2048
+                  cpuArchitecture: "X86_64"
+                  defaultCapacityProvider: false
+                  image: "jenkins/inbound-agent:windowsservercore-ltsc2019"
+                  label: "windows-agent"
+                  launchType: "EC2"
+                  memory: 4096
+                  networkMode: "awsvpc"
+                  operatingSystemFamily: "WINDOWS_SERVER_2019_CORE"
+                  platformVersion: "windowsservercore-ltsc2019"
+                  remoteFSRoot: "/home/jenkins"
+                  securityGroups: ${agent_security_group}
+                  sharedMemorySize: 0
+                  subnets: "${subnet0},${subnet1},${subnet2}"
+                  templateName: "windows-agent"
+                  uniqueRemoteFSRoot: false
+                  enableExecuteCommand: false
+                  environments:
+                  - name: "JENKINS_WEB_SOCKET"
+                    value: "true"
+                  logDriver: awslogs
+                  logDriverOptions:
+                  - name: awslogs-region
+                    value: ${aws_default_region}
+                  - name: awslogs-group
+                    value: ${log_group} 
+                  - name: awslogs-stream-prefix
+                    value: "windows-agent"
+                  - name: awslogs-create-group
+                    value: true
+security:
+  sSHD:
+    port: -1

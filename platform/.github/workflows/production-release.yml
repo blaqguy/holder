@@ -1,0 +1,131 @@
+name: Production Release
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+concurrency:
+  group: 'production-release'
+  cancel-in-progress: false
+
+jobs:
+  SharedNetwork-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'sharedNetwork'
+  Tools-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'tools'
+  SharedProd-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'sharedProd'
+  EbProd-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ebProd'
+  EwbProd-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ewbProd'
+  MuobProd-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'muobProd'
+  SantProd-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'santProd'
+
+  # APPROVAL
+  approval:
+    runs-on: ubuntu-latest
+    needs:
+      - SharedNetwork-Plan
+      - Tools-Plan
+      - SharedProd-Plan
+      - EbProd-Plan
+      - EwbProd-Plan
+      - MuobProd-Plan
+      - SantProd-Plan
+
+    # todo: update environment to production-release or something like that
+    environment: 'master-deployment'
+    steps:
+      - run: |
+          echo "Waiting for approval"
+
+  ## DEPLOYS
+
+  SharedNetwork:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - approval
+      - SharedNetwork-Plan
+    with:
+      platform_env: 'sharedNetwork'
+      stacks: ${{ needs.SharedNetwork-Plan.outputs.stacks }}
+  Tools:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - approval
+      - Tools-Plan
+      - SharedNetwork
+    with:
+      platform_env: 'tools'
+      stacks: ${{ needs.Tools-Plan.outputs.stacks }}
+  SharedProd:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedNetwork
+      - Tools
+      - SharedProd-Plan
+      - approval
+    with:
+      platform_env: 'sharedProd'
+      stacks: ${{ needs.SharedProd-Plan.outputs.stacks }}
+  EbProd:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedNetwork
+      - Tools
+      - EbProd-Plan
+      - SharedProd
+      - approval
+    with:
+      platform_env: 'ebProd'
+      stacks: ${{ needs.EbProd-plan.outputs.stacks }}
+  EwbProd:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedNetwork
+      - Tools
+      - approval
+      - SharedProd
+      - EwbProd-Plan
+    with:
+      platform_env: 'ewbProd'
+      stacks: ${{ needs.EwbProd-Plan.outputs.stacks }}
+  SantProd:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedNetwork
+      - Tools
+      - approval
+      - SharedProd
+      - SantProd-Plan
+    with:
+      platform_env: 'santProd'
+      stacks: ${{ needs.SantProd-Plan.outputs.stacks }}
+  MuobProd:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - SharedNetwork
+      - Tools
+      - approval
+      - SharedProd
+      - MuobProd-Plan
+    with:
+      platform_env: 'muobProd'
+      stacks: ${{ needs.MuobProd-Plan.outputs.stacks }}

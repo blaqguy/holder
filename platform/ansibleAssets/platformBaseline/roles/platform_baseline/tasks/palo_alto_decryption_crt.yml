@@ -1,0 +1,28 @@
+---
+# This task copies the certificate to the trusted anchors directory
+
+- name: Copy the certificate to the trusted anchors directory
+  copy:
+    src: files/pa-decryption.crt
+    dest: /etc/pki/ca-trust/source/anchors/pa-decryption.crt
+    owner: root
+    group: root
+    mode: '0644'
+  register: certificate_copied
+
+- name: Update the CA trust if certificate was copied
+  command: update-ca-trust
+  args:
+    warn: false
+  when: certificate_copied is changed
+
+- name: Verify the certificate is installed
+  command: openssl x509 -in /etc/pki/ca-trust/source/anchors/pa-decryption.crt -text -noout
+  register: cert_info
+  changed_when: false
+
+
+- name: Display certificate information
+  debug:
+    var: cert_info.stdout
+    

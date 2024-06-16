@@ -1,0 +1,380 @@
+---
+- name: Install Base Packages
+  block:
+    # Disabling GPG check because of EPEL repo
+    - name: Install Base Packages
+      yum:
+        name: '{{ base_packages }}'
+        state: present
+        update_cache: yes
+        disable_gpg_check: true
+      vars:
+        base_packages: "{% if ansible_distribution_major_version == '7' %}{{ packages_rhel7 }}{% else %}{{ packages_rhel8 }}{% endif %}"
+
+    # For whatever reason, adding this package in the above task fails to install it
+    # with an error. So, we have to install it separately.
+    - name: Install nmon
+      yum:
+        name: nmon
+        state: present
+        update_cache: yes
+
+    - name: Create daily_nmon.sh script
+      blockinfile:
+        create: true
+        path: /bin/daily_nmon.sh
+        block: |
+          #!/usr/bin/ksh
+          ##############################################
+          #
+          # Variables
+          #
+          ##############################################
+          DATE=$(/usr/bin/date +%m%d%y)
+          HOST=$(/usr/bin/hostname -s)
+          LOG=/support/logs/nmon
+          NMON=/usr/bin/nmon
+          FILE=${LOG}/${HOST}_${DATE}.nmon
+
+          ##############################################
+          #
+          # Kill nmon if running
+          #
+          ##############################################
+          #for i in `ps -ef | grep "nmonlogs" | egrep -v grep | awk '{print $2}'`
+          #do
+          #kill -9 $i
+          #sleep 30
+          #done
+          ##############################################      
+          #
+          # Nmon Command
+          #
+          ##############################################
+          ${NMON} -F ${FILE} -T -s 60 -c 1440
+          ##############################################
+          #
+          # Gzip files older than 7 days
+          # and remove files older than
+          # 90 days.
+          #
+          ##############################################
+          cd ${LOG}
+          find . -name "*.nmon" -exec chmod a+rw {} \;
+          find . -name "*.nmon" -mtime +7 -exec gzip {} \;
+          find . -name "*.nmon.gz" -mtime +90 -exec rm {} \;
+
+    # Make the script executable
+    - name: Make daily_nmon.sh executable
+      file:
+        path: /bin/daily_nmon.sh
+        mode: 0755
+
+    - name: Add cron job for daily_nmon.sh
+      cron:
+        name: Run daily_nmon.sh
+        minute: '0'
+        hour: '0'
+        job: '/bin/daily_nmon.sh >> /tmp/nmon.log 2>&1'
+
+##########################################################
+
+- name: Enable user functionality
+  block:
+    - name: Allow all system users to switch users
+      lineinfile:
+        path: /etc/pam.d/su
+        line: 'auth sufficient pam_permit.so'
+        insertafter: '#%PAM-1.0'
+
+    - name: Enable password authentication
+      replace:
+        path: /etc/ssh/sshd_config
+        regexp: 'PasswordAuthentication no'
+        replace: 'PasswordAuthentication yes'
+
+    - name: restart sshd
+      ansible.builtin.systemd:
+        name: sshd
+        state: restarted
+
+##########################################################
+
+- name: Create UOB group
+  ansible.builtin.group:
+    name: uob
+    state: present
+
+- name: Allow uob group to run sudo commands
+  lineinfile:
+    path: /etc/sudoers.d/uobgroup
+    line: '%uob ALL=(ALL) NOPASSWD:ALL'
+    state: present
+    create: true
+
+# Create UOB users
+- name: UOB Users
+  block:
+    - name: Create ansible user
+      ansible.builtin.user:
+        name: 'ansible'
+        shell: '/bin/bash'
+        groups: uob
+        append: yes
+        state: present
+
+    - name: create fi user
+      ansible.builtin.user:
+        name: 'us{{ fi_name }}'
+        shell: /bin/ksh
+        groups: uob
+        append: yes
+        state: present
+
+    - name: Set password for fi user
+      user:
+        name: 'us{{ fi_name }}'
+        password: "{{ us_finame_pw | password_hash('sha512', 'mysecretsalt') }}"
+
+    - name: ac fi_name user
+      block:
+        - name: create ac fi_name user
+          ansible.builtin.user:
+            name: 'ac{{ fi_name }}'
+            shell: /bin/ksh
+            groups: uob
+            append: yes
+            state: present
+      when: tier == 'rpt'
+
+    - name: create env user
+      ansible.builtin.user:
+        name: '{{ item }}'
+        shell: /bin/ksh
+        groups: uob
+        append: yes
+        state: present
+      when: env_users is defined
+      with_items: '{{ env_users }}'
+
+##########################################################
+# SSH Shenanigans
+##########################################################
+
+- name: Retrieve public key from AWS EC2
+  shell: /usr/local/bin/aws ec2 describe-key-pairs --key-names {{ key_pair_name }} --query "KeyPairs[0].PublicKey" --output text --include-public-key
+  register: public_key
+
+- name: Ensure users have .ssh directory
+  file:
+    path: '/home/{{ item }}/.ssh'
+    state: directory
+    mode: '0700'
+    owner: '{{ item }}'
+    group: '{{ item }}'
+  loop: '{{ ssh_users }}'
+
+- name: Add public key to authorized_keys for users
+  authorized_key:
+    user: '{{ item }}'
+    key: '{{ public_key.stdout }}'
+    state: present
+  loop: '{{ ssh_users }}'
+
+- name: Ensure authorized_keys has correct permissions
+  file:
+    path: '/home/{{ item }}/.ssh/authorized_keys'
+    mode: '0600'
+    owner: '{{ item }}'
+    group: '{{ item }}'
+  loop: '{{ ssh_users }}'
+
+- name: Add users to AllowUsers in sshd_config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: 'AllowUsers {{ item }}'
+    state: present
+  loop: '{{ ssh_users }}'
+
+- name: restart sshd
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted
+
+- name: Retrieve Private SSH key
+  set_fact:
+    ssh_key: "{{ lookup('aws_ssm', '{{ private_key_parameter_name }}', region=region) }}"
+  no_log: true
+
+- name: Add Private SSH key to users .ssh directory
+  copy:
+    content: '{{ ssh_key }}'
+    dest: '/home/{{ item }}/.ssh/id_rsa'
+    owner: '{{ item }}'
+    group: '{{ item }}'
+    mode: '400'
+  loop: '{{ ssh_users }}'
+
+- name: Add build ssh key to authorized_keys
+  authorized_key:
+    user: '{{ item }}'
+    key: "{{ lookup('aws_ssm', '{{ build_key_name }}', region=region) }}"
+    state: present
+  loop: '{{ ssh_users }}'
+  when: build_key_name != 'not-applicable'
+
+##########################################################
+# File System shenanigangs
+##########################################################
+- name: Gather facts
+  ansible.builtin.setup:
+
+- name: Initialize directory missing flag
+  set_fact:
+    directory_missing: false
+
+- name: Determine currently mounted directories
+  set_fact:
+    mounted_dirs: "{{ ansible_mounts | map(attribute='mount') | list }}"
+
+- name: Check if each fs_directory is mounted
+  set_fact:
+    directory_missing: true
+  when: item not in mounted_dirs
+  loop: '{{ fs_directories }}'
+  # This task will attempt to set `directory_missing` to true for each missing directory,
+  # but due to how Ansible processes loops and facts, it effectively only sets it once if any directory is missing.
+
+# Rather be safe than sorry. Skipping this block if all the directories are already mounted
+- name: Create Filesystem
+  block:
+    - name: Create filesystem directories
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: directory
+      with_items: '{{ fs_directories }}'
+
+    - name: Get block device facts
+      setup:
+        filter: ansible_devices
+      register: block_devices
+
+    - name: Create list of non-root EBS volumes
+      set_fact:
+        non_root_volumes: "{{ non_root_volumes | default([]) + ['/dev/' + item.key] }}"
+      when:
+        - "'nvme' in item.key"
+        - "'root' not in item.value.partitions.values() | map(attribute='links.labels') | list | flatten"
+      loop: '{{ block_devices.ansible_facts.ansible_devices | dict2items }}'
+
+    - name: Create filesystem
+      ansible.builtin.filesystem:
+        dev: '{{ item }}'
+        fstype: xfs
+      loop: '{{ non_root_volumes }}'
+
+    - name: Check that the number of non-root volumes and fs_directories are equal
+      assert:
+        that:
+          - non_root_volumes | length == fs_directories | length
+        fail_msg: 'The number of non-root volumes and fs_directories are not equal, mount will fail'
+
+    # On new instances, the uuids are made available after the creation of the filesystems on the block devices
+    - name: Refresh the list of block devices
+      setup:
+        filter: ansible_devices
+      register: block_devices
+
+    # Pull the UUIDs of the non-root volumes
+    - name: Create list of non-root EBS UUIDs
+      set_fact:
+        non_root_uuids: '{{ non_root_uuids | default([]) + [item.value.links.uuids | first] }}'
+      when:
+        - "'nvme' in item.key"
+        - "'root' not in item.value.partitions.values() | map(attribute='links.labels') | list | flatten"
+        - item.value.links.uuids is defined
+        - item.value.links.uuids | length > 0
+      loop: '{{ block_devices.ansible_facts.ansible_devices | dict2items }}'
+
+    # UUIDs are pulled in revere order, so reverse the list
+    - name: Mount and update /etc/fstab
+      ansible.posix.mount:
+        path: '{{ item.1 }}'
+        src: UUID={{ item.0 }}
+        fstype: xfs
+        state: mounted
+        opts: 'defaults'
+        dump: '0'
+        passno: '0'
+      with_together:
+        - '{{ non_root_uuids | reverse }}'
+        - '{{ fs_directories }}'
+
+    - name: Create filesystem subdirectories after mounting the filesystem
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: directory
+      loop: '{{ fs_sub_directories }}'
+      when: fs_sub_directories | length > 0
+
+    - name: Set ACLs for specified paths
+      ansible.builtin.acl:
+        path: '{{ item }}'
+        entity: uob
+        etype: group
+        permissions: rwx
+        state: present
+      loop: '{{ acl_paths }}'
+      when: acl_paths | length > 0
+  when: directory_missing
+
+##########################################################
+# EFS shenanigangs
+##########################################################
+
+- name: Ensure mount point exists
+  ansible.builtin.file:
+    path: /mnt/efs
+    state: directory
+
+- name: Mount the EFS file system with TLS
+  mount:
+    path: /mnt/efs
+    src: '{{ efs_address }}'
+    fstype: 'efs'
+    opts: 'tls,_netdev,defaults,fsc'
+    state: mounted
+
+# Create FI specific EFS directories | PST team has decided to no longer set user/group ownership 05/2024
+- name: Create FI owned EFS directories and set ownership
+  file:
+    path: '/mnt/efs/{{ directory }}'
+    state: directory
+  loop: '{{ fi_efs_directories }}'
+  loop_control:
+    loop_var: directory
+
+- name: Create symbolic links from EFS to local directories
+  file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    state: link
+  with_items:
+    - { src: '/mnt/efs/support/', dest: '/support' }
+    - { src: '/mnt/efs/depot/', dest: '/depot' }
+    - { src: '/mnt/efs/shares/', dest: '/shares' }
+
+# Some instances returning the follow message.
+# "msg": "refusing to convert from directory to symlink for /log_archive"
+# This is a workaround to avoid the error
+- name: Register /log_archive state
+  ansible.builtin.stat:
+    path: /log_archive
+  register: log_archive
+
+- name: Create symbolic link from EFS to /log_archive if it doesn't exist as a local directory
+  file:
+    src: '/mnt/efs/log_archive/'
+    dest: '/log_archive'
+    state: link
+  when: log_archive.stat.islnk is not defined

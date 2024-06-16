@@ -1,0 +1,16 @@
+---
+- name: Create Fisheye user and group
+  block:
+    - name: create fisheye group
+      ansible.builtin.group:
+        name: fisheye
+        state: present
+  
+    - name: create fisheye user
+      ansible.builtin.user:
+        name: fisheye
+        group: fisheye
+        createhome: true
+        shell: /bin/bash
+        state: present
+        append: true

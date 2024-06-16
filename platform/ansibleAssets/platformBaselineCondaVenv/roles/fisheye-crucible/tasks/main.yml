@@ -1,0 +1,15 @@
+---
+- name: Include Base Packages
+  include_tasks: base_packages.yml
+  
+- name: Include Fisheye user
+  include_tasks: fisheye_user.yml
+
+- name: Include Java Home
+  include_tasks: java_home.yml
+
+- name: Include Instance Dir
+  include_tasks: instance_dir.yml
+
+- name: Include Install Fisheye
+  include_tasks: install_fisheye.yml

@@ -1,0 +1,194 @@
+---
+################################################
+# Tier specific vars
+# These are used in conjunction with pre flight checks
+################################################
+
+# APP variables
+app_fs_directories:
+  - '/platform'
+app_fs_sub_directories:
+  - '/platform/fi{{ fi_name }}/InstallationManager'
+app_acl_paths:
+  - '/platform'
+  - '/opt'
+  - '/tmp'
+  - '/var'  
+app_packages:
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-basic-19.18.0.0.0-1.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-sqlplus-19.18.0.0.0-1.x86_64.rpm
+  - ed
+  - libnsl
+  - libnsl.i686
+  - libnsl2
+  - libnsl2.i686  
+
+# Batch variables
+bat_fs_directories:
+  - '/platform'
+bat_fs_sub_directories:
+  - '/platform/fi{{ fi_name }}/InstallationManager'  
+bat_acl_paths:
+  - '/platform'
+  - '/opt'
+  - '/tmp'
+  - '/var'  
+bat_packages:
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-basic-19.18.0.0.0-1.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-sqlplus-19.18.0.0.0-1.x86_64.rpm
+  - ed
+  - libnsl
+  - libnsl.i686
+  - libnsl2
+  - libnsl2.i686  
+
+# Build variables
+bld_fs_directories:
+  - '/platform'
+  - '/data'
+bld_fs_sub_directories:
+  - '/data/ansible/playbooks'
+  - '/data/{{ fi_name }}/releases'
+  - '/data/{{ fi_name }}/staging'
+  - '/data/{{ fi_name }}/artifacts'
+  - '/data/{{ fi_name }}/backups' 
+bld_acl_paths:
+  - '/data'
+  - '/platform'
+  - '/opt'
+  - '/var'
+  - '/tmp'   
+bld_packages:
+  - java-11-openjdk
+  - java-11-openjdk-devel
+  - yum-utils      
+  - mod_ssl
+  - openssh  
+
+# Liquibase variables
+lbs_fs_directories:
+  - '/platform'
+lbs_packages:
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-basic-19.18.0.0.0-1.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-sqlplus-19.18.0.0.0-1.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-tools-19.18.0.0.0-2.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-devel-19.18.0.0.0-2.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-jdbc-19.18.0.0.0-2.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-odbc-19.18.0.0.0-2.x86_64.rpm
+lbs_db_users:
+  - 'd1156sn1'
+  - 'd115sn1'
+  - 'd105sn1'
+  - 'oracle'
+  - 'usrarlm'
+  - 'dfdbusr'
+  - 'postgres'  
+
+# MQ variables
+mq_fs_directories:
+  - '/platform'
+  - '/apps'
+mq_fs_sub_directories:
+  - '/data/ansible/playbooks'
+  - '/data/{{ fi_name }}/releases'
+  - '/data/{{ fi_name }}/staging'
+  - '/data/{{ fi_name }}/artifacts'
+  - '/data/{{ fi_name }}/backups'  
+mq_acl_paths:
+  - '/apps'
+  - '/opt'
+  - '/var'
+  - '/tmp'  
+mq_packages:
+  - ed
+  - gcc
+  - python3-devel
+
+# MSI variables
+msi_fs_directories:
+  - '/platform'
+msi_fs_sub_directories:
+  - '/platform/fi{{ fi_name }}/keys'
+msi_acl_paths:
+  - '/platform'
+  - '/opt'
+  - '/tmp'
+  - '/var'  
+msi_packages:
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-basic-19.18.0.0.0-1.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-sqlplus-19.18.0.0.0-1.x86_64.rpm  
+
+# Report variables
+rpt_fs_directories:
+  - '/platform'
+rpt_fs_sub_directories:
+  - '/platform/fi{{ fi_name }}/actuate/AcServer'  
+rpt_acl_paths:
+  - '/platform'
+  - '/opt'
+  - '/tmp'
+  - '/var' 
+rpt_packages:
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-basic-19.18.0.0.0-1.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-sqlplus-19.18.0.0.0-1.x86_64.rpm
+  - ed
+  - libnsl
+  - libnsl.i686
+  - libnsl2
+  - libnsl2.i686
+  - libstdc++.i686
+  - libstdc++
+  - motif.i686
+  - rpcbind
+  - gcc-c++
+  - libstdc++-devel
+  - libnsl.x86_64
+  - openmotif
+  - dos2unix
+  - '@Development tools'
+  - libstdc++-devel.i686
+  - libstdc++-docs.x86_64        
+
+# Real Time variables
+rt_fs_directories:
+  - '/platform'
+rt_fs_sub_directories:
+  - '/platform/fi{{ fi_name }}'  
+rt_acl_paths:
+  - '/platform'
+  - '/tmp'
+  - '/var'
+  - '/opt'  
+rt_packages:
+  - gcc
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-basic-19.18.0.0.0-1.x86_64.rpm
+  - https://download.oracle.com/otn_software/linux/instantclient/1918000/oracle-instantclient19.18-sqlplus-19.18.0.0.0-1.x86_64.rpm
+  - perl(IO::Uncompress::Unzip)
+  - perl(Sys::Syslog)
+  - perl(Net::Ping)
+  - iptables  
+
+# Simulator variables
+sim_fs_directories:
+  - '/platform'
+sim_fs_sub_directories:
+  - '/platform/fi{{ fi_name }}'  
+sim_acl_paths:
+  - '/platform'
+  - '/tmp'
+  - '/var'
+  - '/opt'  
+
+# WEB variables
+web_fs_directories:
+  - '/platform'  
+web_acl_paths:
+  - '/platform'
+  - '/tmp'
+  - '/var'
+  - '/opt'  
+web_packages:
+  - httpd
+  - mod_ssl
+  - dos2unix
+  - openssh 

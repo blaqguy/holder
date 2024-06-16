@@ -1,0 +1,43 @@
+---
+# Reference: https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/linux-installation/install-infrastructure-monitoring-agent-linux/
+- name: Ensure New Relic license key is configured
+  ansible.builtin.lineinfile:
+    path: /etc/newrelic-infra.yml
+    line: "license_key: {{ newrelic_license_key }}"
+    create: yes  
+    state: present
+
+- name: Determine RHEL version and set New Relic repo URL
+  set_fact:
+    newrelic_repo_url: >-
+      "{{ 'https://download.newrelic.com/infrastructure_agent/linux/yum/el/8/x86_64/'
+      if ansible_facts['distribution_version'] is version('8', '>=') 
+      else 'https://download.newrelic.com/infrastructure_agent/linux/yum/el/7/x86_64/' }}"
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Add New Relic repository
+  ansible.builtin.yum_repository:
+    name: newrelic-infra
+    description: New Relic Infrastructure
+    baseurl: "{{ newrelic_repo_url }}"
+    gpgcheck: no # Failed to validate GPG signature for fluent-bit-2.0.8-1.x86_64
+    enabled: yes
+
+- name: Update YUM cache
+  ansible.builtin.yum:
+    update_cache: yes
+
+- name: Install New Relic Infrastructure agent
+  ansible.builtin.yum:
+    name: newrelic-infra
+    state: latest    
+
+- name: Disable New Relic
+  ansible.builtin.systemd:
+    name: newrelic-infra
+    state: stopped
+    enabled: no
+    masked: yes
+  when: newrelic_disable == true
+
+

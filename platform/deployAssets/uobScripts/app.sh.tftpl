@@ -1,0 +1,444 @@
+#!/bin/bash
+set -euxo pipefail
+
+# Set the log file
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+
+HOST_NAME=${host_name}
+EFS_NAME=${efs_name}
+MOUNT_POINT=${mount_point}
+FI_NAME=${fi_name}
+SUB_DOMAIN=${sub_domain}
+PARAMETER_NAME=${parameter_name}
+SSH_KEY_FILE_NAME=${ssh_key_file_name}
+HOST_FQDN="$HOST_NAME.$SUB_DOMAIN"
+BLK_DEVICE_NAME=${blk_device_name}
+KEY_PAIR_NAME=${key_pair_name}
+PUBLIC_KEY_FILE_NAME=${public_key_file_name}
+VPC_CIDR=${vpc_cidr}
+INGRESS_VPC_CIDR=${ingress_vpc_cidr}
+US_FINAME_PW=${app_usFinamePw}
+# This curl command below uses the IMDSv1 and was not updated as part of ticket AE-485 because this userdata will no longer be used on the servers. 
+# Going forward if there is a change that needs to happen we will use ansible instead. If this does need to be used than this will 
+# need to be updated to follow the IMDSv2 metadata commands found in the aws docs here - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-dynamic-data-retrieval.html
+REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\" '{print $4}')
+EFS_ID=$(aws efs describe-file-systems --query "FileSystems[?Name=='$EFS_NAME'].FileSystemId" --output text --region $REGION)
+IP_ADDRESS=$(hostname -I)
+KEY_PAIR=$(aws ec2 describe-key-pairs --key-names $KEY_PAIR_NAME --query "KeyPairs[0].KeyName" --output text)
+PUBLIC_KEY=$(aws ec2 describe-key-pairs --key-names $KEY_PAIR_NAME --query "KeyPairs[0].PublicKey" --output text --include-public-key)
+SSH_KEY=$(aws ssm get-parameter --name $PARAMETER_NAME --with-decryption --query "Parameter.Value" --output text)
+FS_DIRECTORIES="/home/us$FI_NAME /platform"
+PARTITION_SIZES="50G 100G"
+NEW_PATH="/usr/local/bin"
+DD_USER="dd-agent"
+EFS_DIRECTORIES="
+log_archive
+dumps_archive
+support
+support/depot
+support/logs
+support/logs/nmon
+support/logs/$FI_NAME
+support/dumps
+support/dumps_archive
+support/dumps/$FI_NAME
+support/dumps_archive/$FI_NAME
+support/logs/archive/$FI_NAME
+shares
+shares/$FI_NAME
+depot
+"
+
+function backup_directory() {
+    src_dir="$1"
+    dest_dir="$2"
+
+    if [ ! -d "$dest_dir" ]; then
+        mkdir -p "$dest_dir"
+    fi
+
+    rsync -azP $src_dir $dest_dir    
+
+    # If destination directory is in FS_DIRECTORIES,
+    # restore selinux context of the destination directory and delete the src_dir
+    if [[ "$FS_DIRECTORIES[*]" =~ "$dest_dir" ]]; then
+        restorecon -Rv "$dest_dir"
+        rm -rf "$src_dir"
+    fi
+}
+
+function generate_partition_names() {
+    local blk_device_name="$1"
+    local num_partitions="$2"
+    local partition_names=""
+
+    for ((i = 1; i <= num_partitions; i++)); do
+        partition_names+="${blk_device_name}p$i "
+    done
+
+    echo "$partition_names"
+}
+
+function enable_ssh_access() {
+  local USERNAME="$1"
+  mkdir /home/"$USERNAME"/.ssh
+  chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.ssh
+  chmod 700 /home/"$USERNAME"/.ssh
+  cat "$PUBLIC_KEY_FILE_NAME" >> /home/"$USERNAME"/.ssh/authorized_keys
+  chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.ssh/authorized_keys
+  chmod 600 /home/"$USERNAME"/.ssh/authorized_keys
+  echo "AllowUsers $USERNAME" | tee -a /etc/ssh/sshd_config
+}
+
+# Fix aws command permissions
+chmod -R o+rx /usr/local/aws-cli/
+
+# Update root user path
+echo 'export PATH='"$NEW_PATH"':$PATH' | tee /root/.bashrc > /dev/null
+
+# Set the hostname
+echo "$HOST_NAME" > /etc/hostname
+hostname -F /etc/hostname
+echo "$IP_ADDRESS $HOST_FQDN $HOST_NAME" >> /etc/hosts
+
+# Update resolv.conf file
+echo "DOMAIN=$SUB_DOMAIN" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+systemctl restart NetworkManager
+
+############################# User Settings BEGIN ####################################
+
+# Create FI and Ansible users
+useradd -m -s /bin/ksh us$FI_NAME
+useradd -m -s /bin/bash ansible
+
+# Create UOB group
+groupadd uob
+
+# Add users to group
+for user in ansible us$FI_NAME; do
+    usermod -aG uob $user
+done
+
+# Enable ssh for ansible and us$FI_NAME
+echo "$PUBLIC_KEY" > "$PUBLIC_KEY_FILE_NAME"
+
+enable_ssh_access "ansible"
+enable_ssh_access "us$FI_NAME"
+
+# Set password for us$FI_NAME user
+echo "us$FI_NAME:$US_FINAME_PW" | chpasswd
+
+# enable password authentication
+sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+systemctl restart sshd
+
+# Allow all system users to switch users
+sed -i '/auth\s\+sufficient\s\+pam_rootok.so/a auth sufficient pam_permit.so' /etc/pam.d/su
+
+# Allow uob group to run sudo commands
+echo "%uob ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/uobgroup
+
+# Add env private key to relevant users
+echo "$SSH_KEY" > "/home/us$FI_NAME/.ssh/$SSH_KEY_FILE_NAME"
+chmod 400 "/home/us$FI_NAME/.ssh/$SSH_KEY_FILE_NAME"
+chown us$FI_NAME:us$FI_NAME "/home/us$FI_NAME/.ssh/$SSH_KEY_FILE_NAME"
+
+############################# User Settings END ####################################
+
+# Loop until the device is available
+while true; do
+    if lsblk -p -l | grep -q "$BLK_DEVICE_NAME"; then
+        break
+    else
+        sleep 10
+    fi
+done
+echo "Device $BLK_DEVICE_NAME is available"
+
+# Create filesystem directories
+for fs_directory in $FS_DIRECTORIES; do
+    if [ ! -d "$fs_directory" ]; then
+        mkdir -m 755 "$fs_directory"
+    fi
+done
+
+# Check if the device has partitions
+if blkid "$BLK_DEVICE_NAME" > /dev/null; then
+    echo "Filesystem already exists on $BLK_DEVICE_NAME"
+    PARTITION_NAMES=$(generate_partition_names "$BLK_DEVICE_NAME" "$(echo "$FS_DIRECTORIES" | wc -w)") 
+
+    for fs_directory in $FS_DIRECTORIES; do
+        partition_name=$(echo "$PARTITION_NAMES" | cut -d' ' -f1)
+        PARTITION_NAMES=$(echo "$PARTITION_NAMES" | cut -d' ' -f2-)
+        mount "$partition_name" "/$fs_directory"
+        restorecon -Rv "$fs_directory"
+    done
+    # Check if ~/.ssh/known_hosts file exists
+    if [ -f /home/us$FI_NAME/.ssh/known_hosts ]; then
+        # Delete contents of known hosts file
+        echo "" > /home/us$FI_NAME/.ssh/known_hosts
+    fi       
+else
+    echo "$BLK_DEVICE_NAME does not have partitions"
+
+    backup_directory /home/us$FI_NAME/ /tmp/us$FI_NAME
+
+    # Clear all partition data
+    sgdisk -o "$BLK_DEVICE_NAME"
+
+    # Create partition table and partitions
+    counter=1
+    for partition_size in $PARTITION_SIZES; do
+        sgdisk -n "$counter":0:"+$partition_size" -t "$counter":8e00 "$BLK_DEVICE_NAME"
+        ((counter++))
+    done
+
+    # Inform the kernel of the new partition table(s)
+    partprobe "$BLK_DEVICE_NAME"
+
+    # Create filesystems and mount partitions
+    PARTITION_NAMES="$(generate_partition_names "$BLK_DEVICE_NAME" "$(echo "$FS_DIRECTORIES" | wc -w)")"
+
+    for fs_directory in $FS_DIRECTORIES; do
+        partition_name=$(echo "$PARTITION_NAMES" | cut -d' ' -f1)
+        PARTITION_NAMES=$(echo "$PARTITION_NAMES" | cut -d' ' -f2-)
+        mkfs -t xfs "$partition_name"
+        mount "$partition_name" "/$fs_directory"
+        echo "$partition_name /$fs_directory xfs defaults 0 0" >> /etc/fstab
+    done    
+
+    backup_directory /tmp/us$FI_NAME/ /home/us$FI_NAME
+
+    # Create sub directories
+    DIRECTORIES="
+    /platform/$FI_NAME/InstallationManager
+    "
+
+    for directory in $DIRECTORIES; do
+    if [ ! -d "$directory" ]; then
+        mkdir -p "$directory"
+    fi
+    done
+
+    chown -R us$FI_NAME:us$FI_NAME /platform/
+
+    setfacl -m g:uob:rwx /platform /opt /var /tmp
+fi
+
+# Create .profile for FI user and change ownership
+touch /home/us$FI_NAME/.profile
+chown us$FI_NAME:us$FI_NAME /home/us$FI_NAME/.profile
+chmod 644 /home/us$FI_NAME/.profile
+echo "Created .profile for us$FI_NAME"
+
+# Update FI user .profile
+tee /home/us$FI_NAME/.profile > /dev/null <<'EOF'
+export TERM=vt100
+set -o vi
+export EDITOR=vi
+export VISUAL=vi
+export FCEDIT=vi
+
+CHECKUSER=`id -u`
+CHECKGROUP=`id -g`
+if [ $CHECKUSER = "0" ] || [ CHECKGROUP = "0" ]
+  then PROMPT="#"
+else
+  PROMPT="$"
+fi
+
+OSTYPE=`uname -a|awk '{print $1}'`
+export OSTYPE
+
+case $OSTYPE in
+SunOS)
+        export SHELL=/bin/ksh
+        USERNAME=`/usr/xpg4/bin/id -u -n`
+        export USERNAME
+        PS1='$USERNAME@'`hostname`':$PWD$PROMPT'
+        export PS1
+        echo $USERNAME > /dev/null
+        ;;
+AIX|Linux)
+        USERNAME=`/usr/bin/id -u -n`
+        export USERNAME
+        PS1='$USERNAME@'`hostname`':$PWD$PROMPT'
+        export PS1
+        echo $USERNAME > /dev/null
+        ;;
+esac
+
+stty susp ^Z
+stty intr ^C
+stty erase ^?
+
+umask 002
+
+
+
+export FINAME=${fi_name}
+
+export JAVA_HOME=/platform/${fi_name}/WebSphere/AppServer/java
+export PATH=$HOME/bin:$JAVA_HOME/bin:$PATH:.:
+
+
+export PATH=/platform/${fi_name}/ansible/scripts:$PATH:.:
+
+export IBM_HEAPDUMPDIR=/support/dumps/${fi_name}
+export IBM_HEAPDUMP_OUTOFMEMORY=true
+export IBM_HEAP_DUMP=true
+export IBM_JAVACOREDIR=/support/dumps/${fi_name}
+export IBM_JAVADUMP_OUTOFMEMORY=true
+export BCI_HOME=/shares/${fi_name}/batch
+
+
+# Stop/Start Cluster
+alias stops='echo "stopCluster.sh";stopCluster.sh'
+alias starts='echo "startCluster.sh";startCluster.sh'
+# Stop/Start Nodeagent
+alias stopn='echo "stopNode.sh";stopNode.sh'
+alias startn='echo "startNode.sh";startNode.sh'
+# Stop/Start Deployment manager
+alias stopd='echo "stopManager.sh";stopManager.sh'
+alias startd='echo "startManager.sh";startManager.sh'
+alias status='echo "status.sh";status.sh'
+alias stopall='echo "stops;stopn;stopd";stops;stopn;stopd'
+alias startall='echo "startd;startn;starts";startd;startn;starts'
+
+alias showEnv='echo "showConfig.sh";showConfig.sh'
+
+
+alias todm='cd /platform/${fi_name}/WebSphere/DeploymentManager'
+alias towas='cd /platform/${fi_name}/WebSphere/AppServer'
+
+alias pc='ps -ef|grep -v grep|grep $LOGNAME'
+alias ll='ls -l'
+alias libext='cd /platform/${fi_name}/WebSphere/AppServer/lib/ext'
+
+alias tostage='cd /shares/${fi_name}/uobxsandapp01/Stage'
+alias tobatch='cd $BCI_HOME'
+
+
+if test ! -s "$BCI_HOME/.profile"
+then
+  cd /platform/${fi_name}
+else
+ . $BCI_HOME/.profile
+fi
+
+
+
+
+set -o vi
+alias ll="ls -lrt"
+alias syslogs='cd /platform/${fi_name}/WebSphere/AppServer/logs/${fi_name}u011'
+alias eplogs='cd /platform/${fi_name}/WebSphere/AppServer/logs/${fi_name}u011/Network/uobxsandapp01_Node/${fi_name}u011/UOB'
+EOF
+
+# Check if mount point exists, if not create mount point
+if [ ! -d "$MOUNT_POINT" ]; then
+    mkdir $MOUNT_POINT
+    EFS_ROOT=$(dirname $MOUNT_POINT)
+    chmod -R 777 $EFS_ROOT
+fi
+
+# Wait for DNS resolution before moving on
+while true; do
+    if nslookup $EFS_ID.efs.$REGION.amazonaws.com > /dev/null 2>&1; then
+        echo "DNS resolution successful"
+        break
+    else
+        echo "Waiting for DNS resolution..."
+        sleep 10
+    fi
+done
+
+# Kill nfs-idmapd.service as we don't want EFS enforcing uid/gid mapping/checks
+# check if nfs-idmapd.service is running, if so kill it
+if systemctl is-active --quiet nfs-idmapd.service; then
+    systemctl stop nfs-idmapd.service
+fi
+# Beat the service to death
+systemctl disable nfs-idmapd.service
+systemctl mask nfs-idmapd.service
+systemctl daemon-reload
+systemctl restart nfs-utils.service
+
+# Mount the EFS file system to the EC2 instance
+mount -t efs -o tls $EFS_ID:/ $MOUNT_POINT && \
+echo "EFS file system '$EFS_NAME' was successfully mounted to '$MOUNT_POINT'" || \
+{ echo "Failed to mount EFS file system '$EFS_NAME'"; exit 1; }
+
+# Check if APP EFS directories exists, if not create APP EFS directories
+for directory in $EFS_DIRECTORIES; do
+    if [ ! -d "$MOUNT_POINT/$directory" ]; then
+        mkdir -p -m 777 $MOUNT_POINT/$directory
+        #If directory name contains us$FI_NAME, change ownership to FI_NAME
+        if [[ $directory == *$FI_NAME* ]]; then
+            chown us$FI_NAME:us$FI_NAME $MOUNT_POINT/$directory
+        fi
+    fi
+done
+
+# Create /support /depot and /shares directories if they don't exist and create symbolic links to APP EFS directories
+for directory in support depot shares; do
+    if [ ! -d "/$directory" ]; then
+        mkdir -m 777 /$directory
+        ln -sfn $MOUNT_POINT/$directory/* /$directory
+    fi
+done
+
+# Datadog deploy time logging configurations
+setfacl -m "u:$DD_USER:rx" /var/log/messages
+setfacl -m "u:$DD_USER:rx" /var/log/secure
+setfacl -Rm "u:$DD_USER:rx" /var/log/audit
+usermod -a -G systemd-journal "$DD_USER"
+
+# Datadog deploy time network configurations
+touch system_probe_policy.te
+sudo tee system_probe_policy.te >> /dev/null <<'EOF'
+module system_probe_policy 1.0;
+
+type system_probe_t;
+require {
+  attribute file_type, exec_type, entry_type, base_file_type, base_ro_file_type, non_auth_file_type, non_security_file_type;
+  class bpf { map_create map_read map_write prog_load prog_run };
+}
+
+typeattribute system_probe_t file_type, exec_type, entry_type, base_file_type, base_ro_file_type, non_auth_file_type, non_security_file_type;
+allow system_probe_t self:bpf { map_create map_read map_write prog_load prog_run };
+EOF
+checkmodule -M -m -o system_probe_policy.mod system_probe_policy.te
+semodule_package -o system_probe_policy.pp -m system_probe_policy.mod
+semodule -v -i system_probe_policy.pp
+semanage fcontext -a -t system_probe_t /opt/datadog-agent/embedded/bin/system-probe
+semanage fcontext -d -t system_probe_t /opt/datadog-agent/embedded/bin/system-probe
+restorecon -v /opt/datadog-agent/embedded/bin/system-probe
+sudo systemctl enable datadog-agent-sysprobe
+sudo systemctl start datadog-agent-sysprobe
+sudo systemctl restart datadog-agent
+
+# Datadog enable APM | Will move to base image
+mkdir -m 777 /tracer
+wget -O /tracer/dd-java-agent.jar https://dtdg.co/latest-java-tracer
+chown dd-agent:dd-agent /tracer/dd-java-agent.jar
+chmod 777 /tracer/dd-java-agent.jar
+
+# Allow All VPC traffic to the instance | Will update once we get a list of ports from Devs
+# Temp disable Selinux because its blocking firewalld changes
+sudo setenforce 0
+firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$VPC_CIDR"' accept'
+firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address='"$VPC_CIDR"' port port="1-65535" protocol="tcp" accept'
+firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address='"$VPC_CIDR"' port port="1-65535" protocol="udp" accept'
+
+firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$INGRESS_VPC_CIDR"' accept'
+firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address='"$INGRESS_VPC_CIDR"' port port="1-65535" protocol="tcp" accept'
+firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address='"$INGRESS_VPC_CIDR"' port port="1-65535" protocol="udp" accept'
+
+firewall-cmd --reload
+sudo setenforce 1
+
+# delete the temporary files
+rm -f system_probe_policy.te system_probe_policy.mod system_probe_policy.pp $PUBLIC_KEY_FILE_NAME
+
+echo END

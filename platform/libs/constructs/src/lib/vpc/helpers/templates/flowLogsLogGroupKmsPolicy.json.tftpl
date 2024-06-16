@@ -1,0 +1,29 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Allow use of the key",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::${accountId}:root"
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow Cloudwatch to encrypt logs",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "logs.${regionName}.amazonaws.com"
+            },
+            "Action": [
+                "kms:GenerateDataKey*",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

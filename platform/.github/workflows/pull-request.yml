@@ -1,0 +1,17 @@
+name: Pull Request
+on:
+  pull_request:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    uses: ./.github/workflows/audit.yml
+  lint:
+    uses: ./.github/workflows/lint.yml
+  test:
+    uses: ./.github/workflows/test.yml
+  build:
+    uses: ./.github/workflows/build.yml
+  plan-all:
+    uses: ./.github/workflows/plan-all.yml

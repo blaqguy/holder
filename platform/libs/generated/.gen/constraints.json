@@ -1,0 +1,8 @@
+{
+  "cdktf": "0.16.1",
+  "providers": {
+    "AccountFactoryForTerraform": "1.6.4",
+    "asg": "6.7.1",
+    "ecs": "5.2.0"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "constructs",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/constructs/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/constructs",
+        "tsConfig": "libs/constructs/tsconfig.lib.json",
+        "packageJson": "libs/constructs/package.json",
+        "main": "libs/constructs/src/index.ts",
+        "assets": ["libs/constructs/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/constructs/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/constructs"],
+      "options": {
+        "jestConfig": "libs/constructs/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:construct"]
+}

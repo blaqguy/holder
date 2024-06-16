@@ -1,0 +1,837 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EKS construct Should create resources in EKS construct 1`] = `
+"{
+  \\"data\\": {
+    \\"aws_availability_zones\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2\\": {
+        \\"state\\": \\"available\\"
+      }
+    },
+    \\"aws_caller_identity\\": {
+      \\"mockVpcConstruct_account_F920F323\\": {
+      },
+      \\"mockVpcConstruct_account_id_B128C33F\\": {
+      }
+    },
+    \\"aws_iam_policy_document\\": {
+      \\"eks-eks-cluster-node-group_eks-cluster-trust-policy-doc_9408BC95\\": {
+        \\"statement\\": [
+          {
+            \\"actions\\": [
+              \\"sts:AssumeRole\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"principals\\": [
+              {
+                \\"identifiers\\": [
+                  \\"eks.amazonaws.com\\"
+                ],
+                \\"type\\": \\"Service\\"
+              }
+            ]
+          }
+        ],
+        \\"version\\": \\"2012-10-17\\"
+      },
+      \\"eks-eks-cluster-node-group_eks-node-group-trust-policy-doc_9C08B632\\": {
+        \\"statement\\": [
+          {
+            \\"actions\\": [
+              \\"sts:AssumeRole\\"
+            ],
+            \\"effect\\": \\"Allow\\",
+            \\"principals\\": [
+              {
+                \\"identifiers\\": [
+                  \\"ec2.amazonaws.com\\"
+                ],
+                \\"type\\": \\"Service\\"
+              }
+            ]
+          }
+        ],
+        \\"version\\": \\"2012-10-17\\"
+      }
+    },
+    \\"aws_region\\": {
+      \\"mockVpcConstruct_region_EBFE6351\\": {
+      }
+    }
+  },
+  \\"resource\\": {
+    \\"aws_cloudwatch_log_group\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-flowLogGroup_F5CDB0B3\\": {
+        \\"kms_key_id\\": \\"\${aws_kms_key.mockVpcConstruct_mockVpcConstruct-flowLogsLogGroupKms_36A3EBE9.arn}\\",
+        \\"name\\": \\"mockVpcConstruct-flowLogGroup\\",
+        \\"retention_in_days\\": 365,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-flow-logs\\"
+        }
+      }
+    },
+    \\"aws_db_subnet_group\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-db-subnet-group_CD3483C4\\": {
+        \\"name\\": \\"default-subnet-group\\",
+        \\"subnet_ids\\": [
+          \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet0_8662C1EF.id}\\",
+          \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet1_685E0FBF.id}\\",
+          \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet2_BA21E584.id}\\"
+        ],
+        \\"tags\\": {
+          \\"Name\\": \\"default-subnet-group\\"
+        }
+      }
+    },
+    \\"aws_eks_cluster\\": {
+      \\"eks-eks-cluster-node-group_eks-cluster_E66E3AD6\\": {
+        \\"name\\": \\"eks-cluster\\",
+        \\"role_arn\\": \\"\${aws_iam_role.eks-eks-cluster-node-group_eks-cluster-role_BFF56193.arn}\\",
+        \\"vpc_config\\": {
+          \\"endpoint_private_access\\": true,
+          \\"endpoint_public_access\\": false,
+          \\"subnet_ids\\": [
+            \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet0_F3ADDFFD.id}\\",
+            \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet1_E6B0234E.id}\\",
+            \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet2_5660385B.id}\\"
+          ]
+        }
+      }
+    },
+    \\"aws_eks_node_group\\": {
+      \\"eks-eks-cluster-node-group_eks-node-group_D07E5ACE\\": {
+        \\"cluster_name\\": \\"eks-cluster\\",
+        \\"node_group_name\\": \\"node-group\\",
+        \\"node_role_arn\\": \\"\${aws_iam_role.eks-eks-cluster-node-group_eks-node-group-role_3ECE9340.arn}\\",
+        \\"scaling_config\\": {
+          \\"desired_size\\": 3,
+          \\"max_size\\": 5,
+          \\"min_size\\": 3
+        },
+        \\"subnet_ids\\": [
+          \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet0_F3ADDFFD.id}\\",
+          \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet1_E6B0234E.id}\\",
+          \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet2_5660385B.id}\\"
+        ]
+      }
+    },
+    \\"aws_flow_log\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-flowLog_EFB46CE1\\": {
+        \\"iam_role_arn\\": \\"\${aws_iam_role.mockVpcConstruct_mockVpcConstructflowLogRole_F3488B17.arn}\\",
+        \\"log_destination\\": \\"\${aws_cloudwatch_log_group.mockVpcConstruct_mockVpcConstruct-flowLogGroup_F5CDB0B3.arn}\\",
+        \\"log_destination_type\\": \\"cloud-watch-logs\\",
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-flowLog\\"
+        },
+        \\"traffic_type\\": \\"ALL\\",
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      }
+    },
+    \\"aws_iam_role\\": {
+      \\"eks-eks-cluster-node-group_eks-cluster-role_BFF56193\\": {
+        \\"assume_role_policy\\": \\"\${data.aws_iam_policy_document.eks-eks-cluster-node-group_eks-cluster-trust-policy-doc_9408BC95.json}\\",
+        \\"name\\": \\"eks-eks-cluster-role\\"
+      },
+      \\"eks-eks-cluster-node-group_eks-node-group-role_3ECE9340\\": {
+        \\"assume_role_policy\\": \\"\${data.aws_iam_policy_document.eks-eks-cluster-node-group_eks-node-group-trust-policy-doc_9C08B632.json}\\",
+        \\"name\\": \\"eks-node-group-role\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructflowLogRole_F3488B17\\": {
+        \\"assume_role_policy\\": \\"\${file(\\\\\\"assets/mockVpcConstruct_mockVpcConstruct-baseVpcAssets_93C5C60C/6B39ECA406267D0E34A7D5FCF58546E9/flowLogAssumeRolePolicy.json\\\\\\")}\\",
+        \\"name\\": \\"mockVpcConstruct-flowLogRole\\",
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstructflowLogRole\\"
+        }
+      }
+    },
+    \\"aws_iam_role_policy\\": {
+      \\"mockVpcConstruct_mockVpcConstructflowLogRolePolicy_E750B284\\": {
+        \\"name\\": \\"mockVpcConstruct-flowLogRolePolicy\\",
+        \\"policy\\": \\"\${file(\\\\\\"assets/mockVpcConstruct_mockVpcConstruct-baseVpcAssets_93C5C60C/6B39ECA406267D0E34A7D5FCF58546E9/flowLogRolePolicy.json\\\\\\")}\\",
+        \\"role\\": \\"\${aws_iam_role.mockVpcConstruct_mockVpcConstructflowLogRole_F3488B17.id}\\"
+      }
+    },
+    \\"aws_iam_role_policy_attachment\\": {
+      \\"eks-eks-cluster-node-group_AmazonEC2ContainerRegistryReadOnly-policy-attachment_90AF5F49\\": {
+        \\"policy_arn\\": \\"arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly\\",
+        \\"role\\": \\"\${aws_iam_role.eks-eks-cluster-node-group_eks-node-group-role_3ECE9340.id}\\"
+      },
+      \\"eks-eks-cluster-node-group_AmazonEKSWorkerNodePolicy-policy-attachment_5E0123E5\\": {
+        \\"policy_arn\\": \\"arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy\\",
+        \\"role\\": \\"\${aws_iam_role.eks-eks-cluster-node-group_eks-node-group-role_3ECE9340.id}\\"
+      },
+      \\"eks-eks-cluster-node-group_AmazonEKS_CNI_Policy-policy-attachment_11CF7E43\\": {
+        \\"policy_arn\\": \\"arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy\\",
+        \\"role\\": \\"\${aws_iam_role.eks-eks-cluster-node-group_eks-node-group-role_3ECE9340.id}\\"
+      },
+      \\"eks-eks-cluster-node-group_eks-role-policy-attachment_71EBEA45\\": {
+        \\"policy_arn\\": \\"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\\",
+        \\"role\\": \\"\${aws_iam_role.eks-eks-cluster-node-group_eks-cluster-role_BFF56193.id}\\"
+      }
+    },
+    \\"aws_kms_key\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-flowLogsLogGroupKms_36A3EBE9\\": {
+        \\"enable_key_rotation\\": true,
+        \\"policy\\": \\"\${templatefile(\\\\\\"assets/mockVpcConstruct_mockVpcConstruct-baseVpcAssets_93C5C60C/6B39ECA406267D0E34A7D5FCF58546E9/flowLogsLogGroupKmsPolicy.json.tftpl\\\\\\", {\\\\\\"regionName\\\\\\" = data.aws_region.mockVpcConstruct_region_EBFE6351.name, \\\\\\"accountId\\\\\\" = data.aws_caller_identity.mockVpcConstruct_account_F920F323.account_id})}\\",
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-flowLogsLogGroupKms-kms-key\\"
+        }
+      }
+    },
+    \\"aws_network_acl\\": {
+      \\"mockVpcConstruct_adDataNacl_A6C768D1\\": {
+        \\"tags\\": {
+          \\"Name\\": \\"adDataNacl\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_appNacl_0787615D\\": {
+        \\"tags\\": {
+          \\"Name\\": \\"appNacl\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_dataNacl_7C5D3824\\": {
+        \\"tags\\": {
+          \\"Name\\": \\"dataNacl\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      }
+    },
+    \\"aws_network_acl_association\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-adDataSubnet0NaclAssociation_41188FF9\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructadDataSubnet0_435CB4C0.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-adDataSubnet1NaclAssociation_A49A79CE\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructadDataSubnet1_94806B40.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-adDataSubnet2NaclAssociation_4FFBEF64\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructadDataSubnet2_F470E771.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-appSubnet0NaclAssociation_025C35AA\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet0_F3ADDFFD.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-appSubnet1NaclAssociation_3BD1DA80\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet1_E6B0234E.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-appSubnet2NaclAssociation_E06C9CC0\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet2_5660385B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-dataSubnet0NaclAssociation_81182F89\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet0_8662C1EF.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-dataSubnet1NaclAssociation_E003E014\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet1_685E0FBF.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-dataSubnet2NaclAssociation_59407679\\": {
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet2_BA21E584.id}\\"
+      }
+    },
+    \\"aws_network_acl_rule\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-allow-139-tcp-inbound-adDataNaclRule_0F85A5B6\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 139,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 1400,
+        \\"to_port\\": 139
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-139-udp-inbound-adDataNaclRule_7BCC881A\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 139,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"udp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 1500,
+        \\"to_port\\": 139
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-all-outbound-adDataNaclRule_D25768F6\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": true,
+        \\"from_port\\": 0,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"-1\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 100,
+        \\"to_port\\": 0
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-all-outbound-appNaclRule_EEBD5A44\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_appNacl_0787615D\\"
+        ],
+        \\"egress\\": true,
+        \\"from_port\\": 0,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"protocol\\": \\"-1\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 100,
+        \\"to_port\\": 0
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-all-outbound-dataNaclRule_62E6D958\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824\\"
+        ],
+        \\"egress\\": true,
+        \\"from_port\\": 0,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"protocol\\": \\"-1\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 100,
+        \\"to_port\\": 0
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-change-set-password-tcp-inbound-adDataNaclRule_5E8531DD\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 464,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 500,
+        \\"to_port\\": 464
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-change-set-password-udp-inbound-adDataNaclRule_6FEBB0F6\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 464,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"udp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 600,
+        \\"to_port\\": 464
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-dce-epmap-inbound-adDataNaclRule_01B46FEF\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 135,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 1000,
+        \\"to_port\\": 135
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-dns-tcp-inbound-adDataNaclRule_C030B615\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 53,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 100,
+        \\"to_port\\": 53
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-dns-udp-inbound-adDataNaclRule_ADD3E7E8\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 53,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"udp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 200,
+        \\"to_port\\": 53
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-ephemeral-ports-dataNaclRule_E7AD40BD\\": {
+        \\"cidr_block\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block}\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 1024,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 600,
+        \\"to_port\\": 65535
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-ephemeral-tcp-inbound-adDataNaclRule_68C5A2A1\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 1024,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 1600,
+        \\"to_port\\": 65535
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-ephemeral-udp-inbound-adDataNaclRule_359AD038\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 1024,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"udp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 1700,
+        \\"to_port\\": 65535
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-everything-else-inbound-appNaclRule_E23B9953\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_appNacl_0787615D\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 0,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"protocol\\": \\"-1\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 500,
+        \\"to_port\\": 0
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-https-smb-tcp-inbound-adDataNaclRule_3D9DD835\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 443,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 1100,
+        \\"to_port\\": 445
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-https-smb-udp-inbound-adDataNaclRule_5D6D76D0\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 443,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"udp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 1200,
+        \\"to_port\\": 445
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-kerberos-authentication-tcp-inbound-adDataNaclRule_48B9B88D\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 88,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 300,
+        \\"to_port\\": 88
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-kerberos-authentication-udp-inbound-adDataNaclRule_44C5C737\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 88,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"udp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 400,
+        \\"to_port\\": 88
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-ldap-tcp-inbound-adDataNaclRule_3934D9EB\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 389,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 700,
+        \\"to_port\\": 389
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-ldap-udp-inbound-adDataNaclRule_7A23AD7C\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 389,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"udp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 800,
+        \\"to_port\\": 389
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-ldaps-tcp-inbound-adDataNaclRule_56AA3715\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 636,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 1300,
+        \\"to_port\\": 636
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-mysql-inbound-dataNaclRule_28653C09\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 3306,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 200,
+        \\"to_port\\": 3306
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-nfs-inbound-dataNaclRule_FA45F0A6\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 2049,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 300,
+        \\"to_port\\": 2049
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-ntp-inbound-adDataNaclRule_30C04193\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 123,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_adDataNacl_A6C768D1.id}\\",
+        \\"protocol\\": \\"udp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 900,
+        \\"to_port\\": 123
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-oracle-inbound-dataNaclRule_9B69DD92\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 1521,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 500,
+        \\"to_port\\": 1521
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-postgresql-inbound-dataNaclRule_0363BAD7\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 5432,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 100,
+        \\"to_port\\": 5432
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allow-sqlserver-inbound-dataNaclRule_5E6BBD03\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 1433,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_dataNacl_7C5D3824.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 400,
+        \\"to_port\\": 1433
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-allowAppTraffic_2800309C\\": {
+        \\"cidr_block\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block}\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_appNacl_0787615D\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 1521,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"allow\\",
+        \\"rule_number\\": 99,
+        \\"to_port\\": 1521
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-deny-mysql-inbound-appNaclRule_A937926B\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_appNacl_0787615D\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 3306,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"deny\\",
+        \\"rule_number\\": 200,
+        \\"to_port\\": 3306
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-deny-nfs-inbound-appNaclRule_01D7EE46\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_appNacl_0787615D\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 2049,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"deny\\",
+        \\"rule_number\\": 300,
+        \\"to_port\\": 2049
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-deny-postgresql-inbound-appNaclRule_44A83CD1\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_appNacl_0787615D\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 5432,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"deny\\",
+        \\"rule_number\\": 100,
+        \\"to_port\\": 5432
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-deny-sql-server-inbound-appNaclRule_EF8BEEB2\\": {
+        \\"cidr_block\\": \\"0.0.0.0/0\\",
+        \\"depends_on\\": [
+          \\"aws_network_acl.mockVpcConstruct_appNacl_0787615D\\"
+        ],
+        \\"egress\\": false,
+        \\"from_port\\": 1433,
+        \\"network_acl_id\\": \\"\${aws_network_acl.mockVpcConstruct_appNacl_0787615D.id}\\",
+        \\"protocol\\": \\"tcp\\",
+        \\"rule_action\\": \\"deny\\",
+        \\"rule_number\\": 400,
+        \\"to_port\\": 1434
+      }
+    },
+    \\"aws_route_table\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90\\": {
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-privateRouteTable\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      }
+    },
+    \\"aws_route_table_association\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation0_61ADF46D\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet0_F3ADDFFD.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation10_0D17D668\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructadDataSubnet1_94806B40.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation11_30677462\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructadDataSubnet2_F470E771.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation1_A42341C8\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet1_E6B0234E.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation2_03B42F6A\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructappSubnet2_5660385B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation3_9296B417\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructtransitSubnet0_9E907316.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation4_E3AFC443\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructtransitSubnet1_C8C46CA0.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation5_4C43E7AD\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructtransitSubnet2_29EF4343.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation6_A387986E\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet0_8662C1EF.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation7_7070A7BD\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet1_685E0FBF.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation8_CB8C1C84\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructdataSubnet2_BA21E584.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstruct-privateSubnetRouteTableAssociation9_EA9F73AD\\": {
+        \\"route_table_id\\": \\"\${aws_route_table.mockVpcConstruct_mockVpcConstruct-privateRouteTable_E3893A90.id}\\",
+        \\"subnet_id\\": \\"\${aws_subnet.mockVpcConstruct_mockVpcConstructadDataSubnet0_435CB4C0.id}\\"
+      }
+    },
+    \\"aws_subnet\\": {
+      \\"mockVpcConstruct_mockVpcConstructadDataSubnet0_435CB4C0\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 0)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 9)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-adDataSubnet-1\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructadDataSubnet1_94806B40\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 1)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 10)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-adDataSubnet-2\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructadDataSubnet2_F470E771\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 2)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 11)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-adDataSubnet-3\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructappSubnet0_F3ADDFFD\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 0)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 3)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-appSubnet-1\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructappSubnet1_E6B0234E\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 1)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 4)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-appSubnet-2\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructappSubnet2_5660385B\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 2)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 5)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-appSubnet-3\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructdataSubnet0_8662C1EF\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 0)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 6)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-dataSubnet-1\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructdataSubnet1_685E0FBF\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 1)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 7)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-dataSubnet-2\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructdataSubnet2_BA21E584\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 2)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 8)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-dataSubnet-3\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructtransitSubnet0_9E907316\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 0)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 0)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-transitSubnet-1\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructtransitSubnet1_C8C46CA0\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 1)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 1)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-transitSubnet-2\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      },
+      \\"mockVpcConstruct_mockVpcConstructtransitSubnet2_29EF4343\\": {
+        \\"availability_zone\\": \\"\${element(data.aws_availability_zones.mockVpcConstruct_mockVpcConstruct-zones_DBE91AA2.names, 2)}\\",
+        \\"cidr_block\\": \\"\${cidrsubnet(aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.cidr_block, 4, 2)}\\",
+        \\"map_public_ip_on_launch\\": false,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct-transitSubnet-3\\"
+        },
+        \\"vpc_id\\": \\"\${aws_vpc.mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B.id}\\"
+      }
+    },
+    \\"aws_vpc\\": {
+      \\"mockVpcConstruct_mockVpcConstruct-Vpc_5633E70B\\": {
+        \\"cidr_block\\": \\"10.1.1.1/16\\",
+        \\"enable_dns_hostnames\\": true,
+        \\"enable_dns_support\\": true,
+        \\"tags\\": {
+          \\"Name\\": \\"mockVpcConstruct\\"
+        }
+      }
+    }
+  }
+}"
+`;

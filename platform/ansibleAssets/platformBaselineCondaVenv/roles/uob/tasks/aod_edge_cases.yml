@@ -1,0 +1,58 @@
+---
+- name: UAT - ensure consistent uid and gids for fiewbku2
+  block:
+    - name: Explicitily set gid for usewbku2 group
+      ansible.builtin.group:
+        name: usewbku2
+        state: present
+        gid: 2004
+
+    - name: Explicitily set uid for usewbku2 user
+      ansible.builtin.user:
+        name: usewbku2
+        shell: /bin/bash
+        group: usewbku2
+        state: present
+        uid: 2004
+  when: (sub_domain == 'uat.dragonflyft.com' and fi_name == 'ewbku2') or (sub_domain == 'uat.dragonflyft.com' and fi_name == 'shared')
+
+- name: UAT - ensure consistent uid and gids for fiewbk
+  block:
+    - name: Explicitily set gid for usewbk group
+      ansible.builtin.group:
+        name: usewbk
+        state: present
+        gid: 2006
+
+    - name: Explicitily set uid for usewbk user
+      ansible.builtin.user:
+        name: usewbk
+        shell: /bin/bash
+        group: usewbk
+        state: present
+        uid: 2006
+  when: (sub_domain == 'uat.dragonflyft.com' and fi_name == 'ewbk') or (sub_domain == 'uat.dragonflyft.com' and fi_name == 'shared')
+
+- name: UAT - ensure consistent uid and gids for fisantu2
+  block:
+    - name: Explicitily set gid for ussantu2 group
+      ansible.builtin.group:
+        name: ussantu2
+        state: present
+        gid: 2004
+
+    - name: Explicitily set uid for ussantu2 user
+      ansible.builtin.user:
+        name: ussantu2
+        shell: /bin/bash
+        group: ussantu2
+        state: present
+        uid: 2004
+  when: (sub_domain == 'uat.dragonflyft.com' and fi_name == 'santu2')
+
+- name: Remove hostname from /etc/hosts for web subdomains due to custom entries for multiple URLs on the same IP
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ ip_address }} {{ host_fqdn }} {{ host_name }}"
+    state: absent
+  when: (sub_domain == 'ist.dragonflyft.com' or sub_domain == 'uat.dragonflyft.com' or sub_domain == 'prod.dragonflyft.com') and ('web' in tier)

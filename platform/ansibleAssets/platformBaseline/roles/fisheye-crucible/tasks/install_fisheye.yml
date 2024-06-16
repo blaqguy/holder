@@ -1,0 +1,55 @@
+---
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- block:
+  - name: Create Fisheye install directory
+    ansible.builtin.file:
+      path: /opt/fisheye
+      state: directory
+      owner: fisheye
+      group: fisheye
+
+  - name: Download Fisheye zip
+    get_url:
+      url: 'https://www.atlassian.com/software/fisheye/downloads/binary/fisheye-{{ fisheye_version }}.zip'
+      dest: '/opt/fisheye-{{ fisheye_version }}.zip'
+      mode: '0755'
+
+  - name: Unzip Fisheye to /opt
+    unarchive:
+      src: '/opt/fisheye-{{ fisheye_version }}.zip'
+      dest: /opt/fisheye
+      extra_opts: [-q]    
+      owner: fisheye
+      group: fisheye
+
+  - name: Check if config file exists in instance directory
+    stat:
+      path: '{{ fisheye_instance_dir }}/config.xml'
+    register: config_file
+
+  - name: Copy config.xml file to the instance directory
+    ansible.builtin.copy:
+      src: '/opt/fisheye/fecru-{{ fisheye_version}}/config.xml'
+      dest: '{{ fisheye_instance_dir }}/config.xml'
+      owner: fisheye
+      group: fisheye
+    when: config_file.stat.exists == False
+
+  - name: Define Fisheye service
+    template:
+      src: fisheye_service.j2
+      dest: /etc/systemd/system/fisheye.service
+
+  - name: Reload systemd
+    systemd:
+      daemon_reload: yes
+
+  - name: Start Fisheye service
+    systemd:
+      name: fisheye
+      state: started
+      enabled: yes  
+  when: "'fisheye.service' not in ansible_facts.services"
+  

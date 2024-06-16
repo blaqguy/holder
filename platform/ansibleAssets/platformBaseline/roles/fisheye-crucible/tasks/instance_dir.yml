@@ -1,0 +1,89 @@
+---
+- name: Create Fisheye instance directory
+  ansible.builtin.file:
+    path: "{{ fisheye_instance_dir }}"
+    state: directory
+    owner: fisheye
+    group: fisheye
+
+- name: Get block device facts
+  setup:
+    filter: ansible_devices
+  register: block_devices
+
+- name: Create list of non-root EBS volumes
+  set_fact:
+    non_root_volumes: "{{ non_root_volumes | default([]) + ['/dev/' + item.key] }}"
+  when:
+    - "'nvme' in item.key"
+    - "'root' not in item.value.partitions.values() | map(attribute='links.labels') | list | flatten"
+  loop: "{{ block_devices.ansible_facts.ansible_devices | dict2items }}"
+
+- name: Create filesystem
+  ansible.builtin.filesystem:
+    dev: "{{ item }}"
+    fstype: xfs
+  loop: "{{ non_root_volumes }}"
+
+# On new instances, the uuids are made available after the creation of the filesystems on the block devices
+- name: Refresh the list of block devices
+  setup:
+    filter: ansible_devices
+  register: block_devices
+
+# Pull the UUIDs of the non-root volumes
+- name: Create list of non-root EBS UUIDs
+  set_fact:
+    non_root_uuids: "{{ non_root_uuids | default([]) + [item.value.links.uuids | first] }}"
+  when:
+    - "'nvme' in item.key"
+    - "'root' not in item.value.partitions.values() | map(attribute='links.labels') | list | flatten"
+    - item.value.links.uuids is defined
+    - item.value.links.uuids | length > 0
+  loop: "{{ block_devices.ansible_facts.ansible_devices | dict2items }}"
+
+- name: Mount and update /etc/fstab
+  ansible.posix.mount:
+    path: "{{ item.1 }}"
+    src: UUID={{ item.0 }}
+    fstype: xfs
+    state: mounted
+    opts: "defaults"
+    dump: "0"
+    passno: "0"
+  with_together:
+    - "{{ non_root_uuids }}"
+    - "{{ fisheye_instance_dir }}"
+
+- name: Check if FISHEYE_INST is already set
+  lineinfile:
+    path: /etc/profile
+    line: "export FISHEYE_INST={{ fisheye_instance_dir }}"
+    state: present
+  check_mode: yes
+  register: fisheye_inst_exists
+
+- name: Export Fisheye Instance Dir ENV Variable
+  block:
+    - name: Set FISHEYE_INST in /etc/profile
+      lineinfile:
+        path: /etc/profile
+        line: "export FISHEYE_INST={{ fisheye_instance_dir }}"
+        create: yes
+        state: present
+
+    - name: Reload profile to make FISHEYE_INST available
+      shell: source /etc/profile
+      args:
+        executable: /bin/bash
+
+    # Fisheye was failing to start. Upon closer inspection, the instance directory
+    # Somehow was owned by root even though the directory was created by the fisheye user
+    - name: Ensure correct ownership of the mount point directory
+      file:
+        path: "{{ fisheye_instance_dir }}"
+        state: directory
+        owner: fisheye
+        group: fisheye
+        recurse: yes
+  when: fisheye_inst_exists.changed

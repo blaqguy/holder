@@ -1,0 +1,42 @@
+name: Deploy ENV Stacks
+on:
+  workflow_call:
+    inputs:
+      platform_env:
+        description: 'The env to build and plan'
+        default: 'platformSandbox'
+        required: true
+        type: string
+      stacks:
+        description: 'The stacks to deploy'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, deployment-pool]
+    steps:
+      - name: Clean Workspace Folder
+        run: |
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: npm install
+        run: npm install --include=optional
+      - name: nx build
+        run: nx build platform -c ${{ inputs.platform_env }}
+      - name: synth
+        run: DOCKER_BUILDS_ENABLED=false cdktf list
+      - name: deploy
+        run: |
+          # Check if the output is not empty
+          if [[ "${{ inputs.stacks }}" != '' ]]; 
+          then
+            # Run your command using the output
+            echo "Running command with output: ${{ inputs.stacks }}"
+            cdktf deploy ${{ inputs.stacks }} --auto-approve --ignore-missing-stack-dependencies
+            # Replace the echo command above with your actual command
+          else
+            echo "Output is empty. No command will be executed."
+          fi

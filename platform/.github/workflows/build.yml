@@ -1,0 +1,22 @@
+name: build
+on: workflow_call
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: setup
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: nx install
+        run: npm install nx -g
+
+      - name: npm install
+        run: npm install --include=optional
+
+      - name: build
+        run: nx run-many --target=build --exclude packer

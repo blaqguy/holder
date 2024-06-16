@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DfPackerUtils return AMI data source given an AMI name 1`] = `
+"{
+  \\"data\\": {
+    \\"aws_ami\\": {
+      \\"uob-app-server-Datasource\\": {
+        \\"most_recent\\": true,
+        \\"name_regex\\": \\"uob-app-server\\"
+      }
+    }
+  }
+}"
+`;

@@ -1,0 +1,70 @@
+name: Plan
+on:
+  workflow_call:
+jobs:
+  # Foundation
+  SharedNetwork:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'sharedNetwork'
+  NonProdSharedNetwork:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'nonProdSharedNetwork'
+  Tools:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'tools'
+
+  # Ignoring Master for now as AFT is broken
+  # Master:
+  #   uses: ./.github/workflows/build-matrix.yml
+  #   with:
+  #     platform_env: 'master'
+
+  QE:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'qe'
+  Performance:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'performance'
+  IST:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ist'
+  EbCit-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ebCit'
+  EbQe-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ebQe'
+  EbUat-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ebUat'
+  SharedUat:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'shareduat'
+  EwbUat:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ewbUat'
+  SantUat:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'santUat'
+  MuobUat:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'muobUat'
+  CsiUat:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'csiUat' 
+  plan-prod: 
+    uses: ./.github/workflows/plan-prod.yml

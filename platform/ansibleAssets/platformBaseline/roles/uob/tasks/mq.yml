@@ -1,0 +1,37 @@
+---
+- name: create mqm user
+  ansible.builtin.user:
+    name: 'mqm'
+    shell: /bin/ksh
+    groups: uob
+    append: yes
+    state: present
+
+- name: Install mq packages
+  yum:
+    name: '{{ mq_packages }}'
+    state: present
+    update_cache: yes
+
+- name: Comment out set -o emacs in .kshrc
+  become_user: mqm
+  replace:
+    path: /home/mqm/.kshrc
+    regexp: '^set -o emacs'
+    replace: '# set -o emacs'
+
+- name: Set password for mqm user
+  user:
+    name: mqm
+    password: "{{ mqm_pw | password_hash('sha512', 'mysecretsalt') }}"
+
+- name: ensure mqm owns /opt/mqm, /var/mqm and /apps
+  file:
+    path: '{{ item }}'
+    owner: mqm
+    group: mqm
+    recurse: yes
+  with_items:
+    - /opt/mqm
+    - /var/mqm
+    - /apps      

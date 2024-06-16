@@ -1,0 +1,20 @@
+name: Release Creation
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'release/**'
+concurrency:
+  group: 'release-branch-creation'
+  cancel-in-progress: true
+jobs:
+  audit:
+    uses: ./.github/workflows/audit.yml
+  lint:
+    uses: ./.github/workflows/lint.yml
+  test:
+    uses: ./.github/workflows/test.yml
+  build:
+    uses: ./.github/workflows/build.yml
+  plan:
+    uses: ./.github/workflows/plan-prod.yml

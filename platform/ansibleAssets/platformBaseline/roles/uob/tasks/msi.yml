@@ -1,0 +1,27 @@
+---
+- name: create usrsvs user
+  ansible.builtin.user:
+    name: 'usrsvs'
+    shell: /bin/ksh
+    groups: uob
+    append: yes
+    state: present
+
+- name: Install Msi Base Packages
+  yum:
+    name: '{{ msi_packages }}'
+    state: present
+    update_cache: yes
+    disable_gpg_check: true
+
+- name: Set password for USRSVS user
+  user:
+    name: usrsvs
+    password: "{{ usrsvs_pw | password_hash('sha512', 'mysecretsalt') }}"
+
+- name: Ensure us finame owns /platform directory recursively
+  ansible.builtin.file:
+    path: /platform/fi{{ fi_name }}
+    owner: us{{ fi_name }}
+    group: us{{ fi_name }}
+    recurse: yes      

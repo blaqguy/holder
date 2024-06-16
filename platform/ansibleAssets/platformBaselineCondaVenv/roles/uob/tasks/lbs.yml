@@ -1,0 +1,13 @@
+- name: Install LBS Base Packages
+  yum:
+    name: '{{ lbs_packages }}'
+    state: present
+    update_cache: yes
+    disable_gpg_check: yes
+
+- name: create db_users
+  user:
+    name: '{{ item }}'
+    state: present
+    shell: /bin/bash
+  with_items: '{{ lbs_db_users }}'

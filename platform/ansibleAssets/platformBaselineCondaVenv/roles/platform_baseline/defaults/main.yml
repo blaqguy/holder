@@ -1,0 +1,42 @@
+---
+# defaults file for uob_commons
+
+packages_rhel8:
+  - https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+  - openssh
+  - unzip
+  - lsof
+  - jq
+  - rsync
+  - wget
+  - vim
+  - bind-utils
+  - net-tools
+  - setroubleshoot-server
+  - git
+  - rpm-build
+  - make
+  - telnet
+  - cargo
+  - rust
+  - openssl-devel
+
+packages_rhel7:
+  - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  - openssh
+  - unzip
+  - lsof
+  - jq
+  - rsync
+  - wget
+  - vim
+  - bind-utils
+  - net-tools
+  - setroubleshoot-server
+  - git
+  - rpm-build
+  - make
+  - telnet
+  - cargo
+  - rust
+  - openssl-devel

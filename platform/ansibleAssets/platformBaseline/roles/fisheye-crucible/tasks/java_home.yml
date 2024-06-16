@@ -1,0 +1,28 @@
+---
+- name: Find JAVA_HOME
+  shell: 'dirname $(dirname $(readlink -f $(which java)))'
+  register: java_home_location
+  changed_when: False
+
+- name: Check if JAVA_HOME is already set
+  lineinfile:
+    path: /etc/profile
+    line: 'export JAVA_HOME={{ java_home_location.stdout }}'
+    state: present
+  check_mode: yes
+  register: java_home_exists
+
+- name: Set Java Home ENV Variable
+  block:
+    - name: Set JAVA_HOME in /etc/profile
+      lineinfile:
+        path: /etc/profile
+        line: 'export JAVA_HOME={{ java_home_location.stdout }}'
+        create: yes
+        state: present
+
+    - name: Reload profile to make JAVA_HOME available
+      shell: source /etc/profile
+      args:
+        executable: /bin/bash
+  when: java_home_exists.changed

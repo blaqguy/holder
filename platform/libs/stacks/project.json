@@ -1,0 +1,36 @@
+{
+  "name": "stacks",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/stacks/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/stacks",
+        "tsConfig": "libs/stacks/tsconfig.lib.json",
+        "packageJson": "libs/stacks/package.json",
+        "main": "libs/stacks/src/index.ts",
+        "assets": ["libs/stacks/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/stacks/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/stacks"],
+      "options": {
+        "jestConfig": "libs/stacks/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["scope:stack"]
+}

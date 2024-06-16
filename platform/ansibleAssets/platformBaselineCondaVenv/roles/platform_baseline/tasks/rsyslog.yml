@@ -1,0 +1,21 @@
+---
+# Rsyslong restart always returning changed - adding checks to avoid unnecessary restarts
+- name: Check if rsyslog is already configured
+  ansible.builtin.lineinfile:
+    path: /etc/rsyslog.conf
+    line: '*.* @10.11.54.229:{{ 5140 if ansible_os_family == "RedHat" else 5555 }} # config for shipping logs to the Network Sensor instance'
+  check_mode: yes
+  register: rsyslog_exists
+
+- block:
+  - name: Configure rsyslog to ship logs to Network Sensor
+    lineinfile:
+      path: /etc/rsyslog.conf
+      insertbefore: '^# Include all config files in /etc/rsyslog.d/'
+      line: '*.* @10.11.54.229:{{ 5140 if ansible_os_family == "RedHat" else 5555 }} # config for shipping logs to the Network Sensor instance'
+
+  - name: Restart rsyslog service
+    systemd:
+      name: rsyslog
+      state: restarted
+  when: rsyslog_exists.changed

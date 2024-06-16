@@ -1,0 +1,17 @@
+#!/bin/bash
+# Flush the ipset list
+sudo ipset flush upfset
+
+# Resolve FQDNs to get list of IPs, then add each IP to the UPF ipset
+# Hostnames must be resolved first because ipset can't handle hyphens in FQDNs
+{% for fqdn in upf_database_fqdns.split(',') %}
+
+ips=$(dig +short {{ fqdn }} | grep -v '[^0-9\.]')
+echo "Found the following IPs for {{ fqdn }}: $ips"
+
+for ip in $ips; do
+    sudo ipset -exist add upfset $ip
+    echo "$ip added to or already existed in upfset"
+done
+
+{% endfor %}

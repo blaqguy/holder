@@ -1,0 +1,26 @@
+---
+# Network manager restart always returning changed - adding checks to avoid unnecessary restarts
+
+- name: Check if domain is already set
+  ansible.builtin.lineinfile:
+    path: /etc/sysconfig/network-scripts/ifcfg-eth0
+    line: 'DOMAIN={{ sub_domain }}'
+    state: present
+  check_mode: yes
+  register: domain_exists
+
+- block:
+  - name: Update ifcfg-eth0
+    ansible.builtin.lineinfile:
+      path: /etc/sysconfig/network-scripts/ifcfg-eth0
+      line: 'DOMAIN={{ sub_domain }}'
+      state: present
+
+  # Explicitly restarting NetworkManager instead of using handler
+  # If the playbook run fails before running handlers at the end of the run,
+  # resolv.conf is never updated with the config added to ifcfg-eth0
+  - name: restart network manager to propagate ifcfg-eth0 changes to /etc/resolv.conf
+    ansible.builtin.systemd:
+      name: NetworkManager
+      state: restarted
+  when: domain_exists.changed

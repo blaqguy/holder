@@ -1,0 +1,27 @@
+---
+- name: Download awscliv2 installer
+  unarchive:
+    src: 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip'
+    dest: '~'
+    remote_src: true
+    creates: '~/aws'
+    extra_opts: [-q]
+    mode: 0755
+
+- name: Run the installer.
+  command:
+  args:
+    cmd: '~/aws/install'
+    creates: /usr/local/bin/aws
+
+- name: Allow all users to run aws commands
+  ansible.builtin.file:
+    path: /usr/local/aws-cli/
+    mode: 0755
+    recurse: yes
+
+- name: Update Root user with AWS command path
+  ansible.builtin.lineinfile:
+    path: /root/.bashrc
+    line: 'export PATH=/usr/local/bin:$PATH'
+    create: yes

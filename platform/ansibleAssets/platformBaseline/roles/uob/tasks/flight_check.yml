@@ -1,0 +1,49 @@
+---
+- name: Pre flight Check
+  block:
+    - name: Get the tier tag
+      set_fact:
+        tier: "{{ ec2_tags.tags['tier'] }}"
+
+    - name: Get the fi_name tag
+      set_fact:
+        fi_name: "{{ ec2_tags.tags['fi_name'] }}"
+    
+    - name: Get environment tag
+      set_fact:
+        aws_environment: "{{ ec2_tags.tags['Environment'] }}"
+
+- name: Ssh variables
+  block:
+    - name: Ssh users
+      set_fact:
+        ssh_users: ['ansible']
+
+    - name: Add fi_name user to ssh_users when tier is not bld
+      set_fact:
+        ssh_users: "{{ ssh_users + ['us' + fi_name] }}"
+      when: tier != 'bld'
+
+    - name: Add ac fi_name user to ssh_users when tier is rpt
+      set_fact:
+        ssh_users: "{{ ssh_users + ['ac' + fi_name] }}"
+      when: tier == 'rpt'
+
+- name: Load environment based variables
+  block:
+    - name: Load qe variables
+      include_vars:
+        file: "qe.yml"
+      when: aws_environment == 'qe'
+
+    - name: Load aod variables
+      include_vars:
+        file: "aod.yml"
+      when: aws_environment != 'qe'
+
+- name: Set filesystem variables based on tier
+  set_fact:
+    fs_directories: "{{ lookup('vars', tier + '_fs_directories') }}"
+    fs_sub_directories: "{{ lookup('vars', tier + '_fs_sub_directories', default=[]) }}"
+    acl_paths: "{{ lookup('vars', tier + '_acl_paths', default=[]) }}"
+    

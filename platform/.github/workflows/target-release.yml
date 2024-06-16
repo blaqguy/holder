@@ -1,0 +1,42 @@
+name: Target Release
+on:
+  workflow_dispatch:
+    inputs:
+      platform_env:
+        description: 'The env to build and plan'
+        default: 'platformSandbox'
+        required: true
+        type: string
+      stacks:
+        description: 'A space delimited list of stacks to deploy'
+        required: true
+        type: string
+
+concurrency:
+  group: 'deployment'
+  cancel-in-progress: false
+
+jobs:
+  ### Parallelized Plan for all ENVS
+  TargetRelease-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: ${{ github.event.inputs.platform_env }}
+
+  # APPROVAL
+  approval:
+    runs-on: ubuntu-latest
+    needs: TargetRelease-Plan
+    environment: target-release-approval
+    steps:
+      - run: |
+          echo "Waiting for approval"
+
+  TargetedRelease-Deploy:
+    uses: ./.github/workflows/deploy-env-stacks.yml
+    needs:
+      - approval
+      - TargetRelease-Plan
+    with:
+      platform_env: ${{ github.event.inputs.platform_env }}
+      stacks: ${{ github.event.inputs.stacks }}

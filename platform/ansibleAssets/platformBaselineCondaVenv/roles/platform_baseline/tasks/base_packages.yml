@@ -1,0 +1,43 @@
+---
+# Disabling GPG check because of EPEL repo
+- name: Install Base Packages
+  yum:
+    name: '{{ base_packages }}'
+    state: present
+    update_cache: yes
+    disable_gpg_check: true
+  vars:
+    base_packages: "{% if ansible_distribution_major_version == '7' %}{{ packages_rhel7 }}{% else %}{{ packages_rhel8 }}{% endif %}"
+
+- name: Check if efs-utils exists
+  stat:
+    path: /tmp/src/efs-utils
+  register: efs_utils_installed
+
+- name: Install amazon-efs utils
+  block:
+    - name: Checkout efs-utils
+      git:
+        repo: https://github.com/aws/efs-utils
+        dest: /tmp/src/efs-utils
+        version: 'v1.36.0'
+        clone: yes
+
+    - name: build RedHat rpm
+      command: 'make rpm'
+      args:
+        chdir: /tmp/src/efs-utils
+        creates: '/tmp/src/efs-utils/build/amazon-efs-utils*rpm'
+
+    - name: Find all aws/efs-utils rpms that were built
+      find:
+        paths: /tmp/src/efs-utils/build
+        patterns: 'amazon-efs-utils*.rpm'
+      register: built_rpms
+
+    - name: use yum to install efs-utils
+      yum:
+        name: '{{ built_rpms.files[0].path }}'
+        state: present
+        disable_gpg_check: true
+  when: not efs_utils_installed.stat.exists

@@ -1,0 +1,11 @@
+{
+  "dev": "0.0.10",
+  "developerSandbox": "0.0.8",
+  "master": "0.0.7",
+  "platformSandbox": "0.0.12",
+  "platformSandboxSharedNetwork": "0.0.1",
+  "sharedNetwork": "0.0.9",
+  "tools": "0.0.14",
+  "architectureSandbox": "0.0.3",
+  "performance": "0.0.3"
+}

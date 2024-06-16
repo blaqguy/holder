@@ -1,0 +1,298 @@
+import { DfAccounts } from '@dragonfly/utils';
+import { UpfConfig, UpfDbConfig } from './upfConfig';
+
+/**
+ * Class defining the upf db configurations
+ */
+export abstract class UpfMuobUatDbConfig extends UpfConfig {
+  public static configuration: UpfDbConfig = {
+    upf01: {
+      id: 'muobUat-upf-01'.toLowerCase(),
+      route53Name: 'dbup1muob1u1.uat',
+      engine: 'oracle-se2',
+      engineVersion: '19',
+      storageType: 'gp3',
+      allocatedStorage: 50,
+      instanceClass: 'db.t3.2xlarge',
+      performanceInsightsEnabled: true,
+      createBucket: false,
+      dbName: 'D1UP1MU1',
+      sopsDbProperty: 'dbup1muob1u1upf',
+      prodCustomerData: true,
+      additionalSgCidrBlocks: [
+        DfAccounts.getSharedUatAccountDef().vpcCidrs.main.primary,
+      ],
+      availabilityZone: 'us-east-2b',
+      optionGroupName: 'muobUat-upf-01-option-group-est'.toLowerCase(),
+      timezone: 'America/New_York',
+      parameterGroupConfig: {
+        name: 'muobUat-upf-01-upf-params'.toLowerCase(),
+        family: 'oracle-se2-19',
+        parameter: [
+          {
+            name: 'open_links',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+          {
+            name: 'open_links_per_instance',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+        ],
+      },
+    },
+    upf02: {
+      id: 'muobUat-upf-02'.toLowerCase(),
+      route53Name: 'dbup1muob2u1.uat',
+      engine: 'oracle-se2',
+      engineVersion: '19',
+      storageType: 'gp3',
+      allocatedStorage: 50,
+      instanceClass: 'db.t3.2xlarge',
+      performanceInsightsEnabled: true,
+      createBucket: false,
+      dbName: 'D1UP2MU1',
+      sopsDbProperty: 'dbup1muob2u1upf',
+      prodCustomerData: true,
+      additionalSgCidrBlocks: [
+        DfAccounts.getSharedUatAccountDef().vpcCidrs.main.primary,
+      ],
+      availabilityZone: 'us-east-2b',
+      optionGroupName: 'muobUat-upf-02-option-group-est'.toLowerCase(),
+      timezone: 'America/New_York',
+      parameterGroupConfig: {
+        name: 'muobUat-upf-02-upf-params'.toLowerCase(),
+        family: 'oracle-se2-19',
+        parameter: [
+          {
+            name: 'open_links',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+          {
+            name: 'open_links_per_instance',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+        ],
+      },
+    },
+    upf03: {
+      id: 'muobUat-upf-03'.toLowerCase(),
+      route53Name: 'dbup2muob1u1.uat',
+      engine: 'oracle-se2',
+      engineVersion: '19',
+      storageType: 'gp3',
+      allocatedStorage: 50,
+      instanceClass: 'db.t3.2xlarge',
+      performanceInsightsEnabled: true,
+      createBucket: false,
+      dbName: 'D2UP1MU1',
+      sopsDbProperty: 'dbup2muob1u1upf',
+      prodCustomerData: true,
+      additionalSgCidrBlocks: [
+        DfAccounts.getSharedUatAccountDef().vpcCidrs.main.primary,
+      ],
+      availabilityZone: 'us-east-2c',
+      optionGroupName: 'muobUat-upf-03-option-group-est'.toLowerCase(),
+      timezone: 'America/New_York',
+      parameterGroupConfig: {
+        name: 'muobUat-upf-03-upf-params'.toLowerCase(),
+        family: 'oracle-se2-19',
+        parameter: [
+          {
+            name: 'open_links',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+          {
+            name: 'open_links_per_instance',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+        ],
+      },
+    },
+    upf04: {
+      id: 'muobUat-upf-04'.toLowerCase(),
+      route53Name: 'dbup2muob2u1.uat',
+      engine: 'oracle-se2',
+      engineVersion: '19',
+      storageType: 'gp3',
+      allocatedStorage: 50,
+      instanceClass: 'db.t3.2xlarge',
+      performanceInsightsEnabled: true,
+      createBucket: false,
+      dbName: 'D2UP2MU1',
+      sopsDbProperty: 'dbup2muob2u1upf',
+      prodCustomerData: true,
+      additionalSgCidrBlocks: [
+        DfAccounts.getSharedUatAccountDef().vpcCidrs.main.primary,
+      ],
+      availabilityZone: 'us-east-2c',
+      optionGroupName: 'muobUat-upf-04-option-group-est'.toLowerCase(),
+      timezone: 'America/New_York',
+      parameterGroupConfig: {
+        name: 'muobUat-upf-04-upf-params'.toLowerCase(),
+        family: 'oracle-se2-19',
+        parameter: [
+          {
+            name: 'open_links',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+          {
+            name: 'open_links_per_instance',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+        ],
+      },
+    },
+    upf05: {
+      id: 'muobU3Uat-upf-01'.toLowerCase(),
+      route53Name: 'dbup1muob1u3.uat',
+      engine: 'oracle-se2',
+      engineVersion: '19',
+      storageType: 'gp3',
+      allocatedStorage: 50,
+      instanceClass: 'db.t3.xlarge',
+      performanceInsightsEnabled: true,
+      createBucket: false,
+      dbName: 'D1UP1MU3',
+      sopsDbProperty: 'dbmuobu3upf',
+      prodCustomerData: true,
+      additionalSgCidrBlocks: [
+        DfAccounts.getSharedUatAccountDef().vpcCidrs.main.primary,
+      ],
+      availabilityZone: 'us-east-2a',
+      optionGroupName: 'muobU3Uat-upf-01-option-group-est'.toLowerCase(),
+      timezone: 'America/New_York',
+      parameterGroupConfig: {
+        name: 'muobU3Uat-upf-01-upf-params'.toLowerCase(),
+        family: 'oracle-se2-19',
+        parameter: [
+          {
+            name: 'open_links',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+          {
+            name: 'open_links_per_instance',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+        ],
+      },
+    },
+    upf06: {
+      id: 'muobU3at-upf-02'.toLowerCase(),
+      route53Name: 'dbup1muob2u3.uat',
+      engine: 'oracle-se2',
+      engineVersion: '19',
+      storageType: 'gp3',
+      allocatedStorage: 50,
+      instanceClass: 'db.t3.xlarge',
+      performanceInsightsEnabled: true,
+      createBucket: false,
+      dbName: 'D1UP1MU3',
+      sopsDbProperty: 'dbmuobu3upf',
+      prodCustomerData: true,
+      additionalSgCidrBlocks: [
+        DfAccounts.getSharedUatAccountDef().vpcCidrs.main.primary,
+      ],
+      availabilityZone: 'us-east-2a',
+      optionGroupName: 'muobU3at-upf-02-option-group-est'.toLowerCase(),
+      timezone: 'America/New_York',
+      parameterGroupConfig: {
+        name: 'muobU3at-upf-02-upf-params'.toLowerCase(),
+        family: 'oracle-se2-19',
+        parameter: [
+          {
+            name: 'open_links',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+          {
+            name: 'open_links_per_instance',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+        ],
+      },
+    },
+    upf07: {
+      id: 'muobu4-upf-01'.toLowerCase(),
+      route53Name: 'dbup1muob1u4.uat',
+      engine: 'oracle-se2',
+      engineVersion: '19',
+      storageType: 'gp3',
+      allocatedStorage: 50,
+      instanceClass: 'db.t3.medium',
+      performanceInsightsEnabled: true,
+      createBucket: false,
+      dbName: 'D1UP1MU4',
+      sopsDbProperty: 'dbmuobu4upf',
+      prodCustomerData: true,
+      additionalSgCidrBlocks: [
+        DfAccounts.getSharedUatAccountDef().vpcCidrs.main.primary,
+      ],
+      availabilityZone: 'us-east-2a',
+      optionGroupName: 'muobu4-upf-01-option-group-est'.toLowerCase(),
+      timezone: 'America/New_York',
+      parameterGroupConfig: {
+        name: 'muobu4-upf-01-upf-params'.toLowerCase(),
+        family: 'oracle-se2-19',
+        parameter: [
+          {
+            name: 'open_links',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+          {
+            name: 'open_links_per_instance',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+        ],
+      },
+    },
+    upf08: {
+      id: 'muobu4-upf-02'.toLowerCase(),
+      route53Name: 'dbup2muob1u4.uat',
+      engine: 'oracle-se2',
+      engineVersion: '19',
+      storageType: 'gp3',
+      allocatedStorage: 50,
+      instanceClass: 'db.t3.medium',
+      performanceInsightsEnabled: true,
+      createBucket: false,
+      dbName: 'D2UP1MU4',
+      sopsDbProperty: 'dbmuobu4upf',
+      prodCustomerData: true,
+      additionalSgCidrBlocks: [
+        DfAccounts.getSharedUatAccountDef().vpcCidrs.main.primary,
+      ],
+      availabilityZone: 'us-east-2b',
+      optionGroupName: 'muobu4-upf-02-option-group-est'.toLowerCase(),
+      timezone: 'America/New_York',
+      parameterGroupConfig: {
+        name: 'muobu4-upf-02-upf-params'.toLowerCase(),
+        family: 'oracle-se2-19',
+        parameter: [
+          {
+            name: 'open_links',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+          {
+            name: 'open_links_per_instance',
+            value: '10',
+            applyMethod: 'pending-reboot',
+          },
+        ],
+      },
+    },
+  };
+}

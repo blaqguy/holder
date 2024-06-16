@@ -1,0 +1,16 @@
+---
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+
+- name: Stop the Datadog Agent service if installed
+  ansible.builtin.service:
+    name: datadog-agent
+    state: stopped
+  when: '"datadog-agent" in ansible_facts.packages'
+
+- name: Uninstall the Datadog Agent if installed
+  ansible.builtin.yum:
+    name: datadog-agent
+    state: absent
+  when: '"datadog-agent" in ansible_facts.packages'

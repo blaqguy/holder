@@ -1,0 +1,33 @@
+name: Plan Prod
+on:
+  workflow_call:
+jobs:
+  # Foundation
+  SharedNetwork:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'sharedNetwork'
+  Tools:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'tools'
+  EbProd-Plan:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ebProd'
+  SharedProd:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'sharedProd'
+  EwbProd:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'ewbProd'
+  SantProd:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'santProd'
+  MuobProd:
+    uses: ./.github/workflows/build-env-plan.yml
+    with:
+      platform_env: 'muobProd'

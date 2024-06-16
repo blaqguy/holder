@@ -1,0 +1,21 @@
+events {}
+http {
+  resolver 169.254.169.253;
+  
+  server {
+    listen ${listeningPort};
+    server_name app.dragonflyft.com;
+    location / {
+      default_type text/html;
+      return 200 'This is test text!';  
+    }
+  }
+
+  server {
+    listen ${listeningPort} default_server;
+    location / {
+      default_type text/html;
+      return 200 'Healthy!';
+    }
+  }
+}

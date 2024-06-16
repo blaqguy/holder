@@ -1,0 +1,61 @@
+- name: Platform Baseline Configuration
+  hosts: localhost
+  connection: local
+  become: yes
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Get EC2 metadata
+      amazon.aws.ec2_metadata_facts:
+      register: pre_task_ec2_metadata
+
+    - name: Get EC2 instance tags
+      amazon.aws.ec2_tag_info:
+        region: "{{ pre_task_ec2_metadata.ansible_facts['ansible_ec2_placement_region'] }}"
+        resource: "{{ pre_task_ec2_metadata.ansible_facts['ansible_ec2_instance_id'] }}"
+      register: pre_task_ec2_tags
+
+    - name: Get the application tag
+      set_fact:
+        pre_task_ec2_application: "{{ pre_task_ec2_tags.tags['application'] }}"
+
+    - name: Set Current Region Variable
+      set_fact:
+        region: "{{ pre_task_ec2_metadata.ansible_facts['ansible_ec2_placement_region'] }}"
+
+  vars:
+    ip_address: '{{ ansible_default_ipv4.address }}'
+    sub_domain: "{{ lookup('aws_ssm', 'sub_domain', region=region ) }}"
+    s1_api_key: "{{ lookup('aws_ssm', 's1_api_key', region=region ) }}"
+    s1_site_token: "{{ lookup('aws_ssm', 's1_site_token', region=region ) }}"
+    newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region=region ) }}"
+    newrelic_disable: "{{ lookup('aws_ssm', 'newrelic_disable', region=region ) }}"
+
+  roles:
+    - role: '../roles/platform_baseline'
+    - role: '../roles/sentinel_one_agent'
+    - role: '../roles/datadog'
+    - role: '../roles/newrelic'
+
+    # Only runs when application tag is set to 'fisheye-crucible'
+    - role: '../roles/fisheye-crucible'
+      vars:
+        fisheye_version: '4.8.13'
+        fisheye_instance_dir: '/data'
+      when: "'fisheye-crucible' in pre_task_ec2_application"
+
+      # Only runs when application tag is set to 'uob'
+    - role: '../roles/uob'
+      vars:
+        key_pair_name: "{{ lookup('aws_ssm', 'key_pair_name', region=region ) }}"
+        private_key_parameter_name: "{{ lookup('aws_ssm', 'private_key_parameter_name', region=region  ) }}"
+        build_key_name: "{{ lookup('aws_ssm', 'build_key_name', region=region, on_missing='skip') | default('not-applicable', true) }}"
+        efs_address: "{{ lookup('aws_ssm', 'efs_address', region=region ) }}"
+        us_finame_pw: "{{ lookup('aws_ssm', 'us_finame_pw', region=region ) }}"
+        mqm_pw: "{{ lookup('aws_ssm', 'mqm_pw', region=region ) }}"
+        usrsvs_pw: "{{ lookup('aws_ssm', 'usrsvs_pw', region=region ) }}"
+        usrrpt_pw: "{{ lookup('aws_ssm', 'usrrpt_pw', region=region ) }}"
+        ihsadmin_pw: "{{ lookup('aws_ssm', 'ihsadmin_pw', region=region ) }}"
+        # upf_database_fqdns: "{{ lookup('aws_ssm', 'upf_database_fqdns', region=region ) | default('dbu1ewbk.prod.dragonflyft.com,dbu2ewbk.prod.dragonflyft.com', true) }}" # Default is temp
+        upf_database_fqdns: "{{ lookup('aws_ssm', 'upf_database_fqdns', region=region, on_missing='skip') | default('not-applicable', true) }}" # Default is temp
+      when: "'uob' in pre_task_ec2_application"

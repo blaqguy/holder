@@ -1,0 +1,28 @@
+---
+- name: Get EC2 instance metadata
+  amazon.aws.ec2_metadata_facts:
+  register: ec2_metadata
+
+- name: Get EC2 instance tags
+  amazon.aws.ec2_tag_info:
+    region: "{{ ec2_metadata.ansible_facts['ansible_ec2_placement_region'] }}"
+    resource: "{{ ec2_metadata.ansible_facts['ansible_ec2_instance_id'] }}"
+  register: ec2_tags
+
+- name: Get the hostname tag
+  set_fact:
+    host_name: "{{ ec2_tags.tags['hostname'] }}"
+
+- name: Set the hostname
+  ansible.builtin.hostname:
+    name: '{{ host_name }}'
+
+- name: Set the host fqdn
+  set_fact:
+    host_fqdn: '{{ host_name }}.{{ sub_domain }}'
+
+- name: Add hostname to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: '{{ ip_address }} {{ host_fqdn }} {{ host_name }}'
+    state: present
